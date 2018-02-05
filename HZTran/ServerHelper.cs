@@ -1,6 +1,7 @@
 ﻿using Common;
 using Model;
 using System;
+using System.IO;
 
 namespace HangZhouTran
 {
@@ -14,7 +15,7 @@ namespace HangZhouTran
             var data = client.GetInfo(wbNo, appNo);
             if (SaveResData == 1)
             {
-                var xmlFile = AppDomain.CurrentDomain.BaseDirectory + "responseFiles\\" + DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt";
+                var xmlFile = Path.Combine(CreateFilePath("responseFiles"), DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt");
                 XmlHelper.SaveToFile(data, xmlFile);
             }
             var info = XmlHelper.Deserialize<XMLInfo>(data);
@@ -27,12 +28,23 @@ namespace HangZhouTran
             var data = client.SetExam(wbNo, appNo, opType);
             if (SaveResData == 1)
             {
-                var xmlFile = AppDomain.CurrentDomain.BaseDirectory + "putResponseFiles\\" + DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt";
+                var xmlFile = Path.Combine(CreateFilePath("putResponseFiles"), DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt");
                 XmlHelper.SaveToFile(data, xmlFile);
             }
             //var info = XmlHelper.Deserialize<XMLInfo>(data);
             //return info;
 
+        }
+
+        private static string CreateFilePath(string pathName)
+        {
+
+            var path = AppDomain.CurrentDomain.BaseDirectory + pathName + "\\" + DateTime.Now.ToString("yyyyMMdd");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
         }
     }
 }
