@@ -17,7 +17,7 @@ namespace Model
     public class head
     {
         public string businessType { get; set; }
-        public DateTime createTime { get; set; }
+        public string createTime { get; set; }
         public int status { get; set; }
         public string errMsg { get; set; }
     }
@@ -38,8 +38,8 @@ namespace Model
         public string TRADE_COUNTRY { get; set; }
         public string I_E_FLAG { get; set; }
         public string I_E_PORT { get; set; }
-        public DateTime? I_E_DATE { get; set; }
-        public DateTime? D_DATE { get; set; }
+        public string I_E_DATE { get; set; }
+        public string D_DATE { get; set; }
         public string TRADE_NAME { get; set; }
         public string OWNER_NAME { get; set; }
         public string AGENT_NAME { get; set; }
@@ -55,15 +55,20 @@ namespace Model
         public decimal GROSS_WT { get; set; }
         public decimal DECL_TOTAL { get; set; }
         public string DECL_PORT { get; set; }
-        public bool RSK_FLAG { get; set; }
-        public bool EXAM_FLAG { get; set; }
+   
+        public string RSK_FLAG { get; set; }
+        public string EXAM_FLAG { get; set; }
         public int I_E_TYPE { get; set; }
         public string INTERNAL_NAME { get; set; }
         public string EBP_NAME { get; set; }
         public string BAG_NO { get; set; }
 
+        public bool R_FLAG { get; set; }
 
+        public bool GJ_FLAG { get; set; }
 
+        public string Send_FLAG { get; set; }
+        public string Op_type { get; set; }
     }
 
     public class ENTRYBILL_LIST
@@ -83,8 +88,9 @@ namespace Model
         public string UNIT_1 { get; set; }
         public decimal QTY_2 { get; set; }
         public string UNIT_2 { get; set; }
-        public decimal USD_PRICE { get; set; }
-        public string DUTY_MODE { get; set; }
+       
+        public string USD_PRICE { get; set; }
+        public int? DUTY_MODE { get; set; }
         public decimal G_WT { get; set; }
 
 

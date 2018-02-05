@@ -42,7 +42,7 @@ namespace Common
         public static T DeserializeFromFile<T>(string fileName)
         {
             FileStream fs = null;
-
+            
             try
             {
                 fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);

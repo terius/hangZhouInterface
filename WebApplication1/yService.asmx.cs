@@ -31,7 +31,7 @@ namespace WebApplication1
             XMLInfo info = new XMLInfo();
             head head = new head();
             head.businessType = "ENTRYBILL_INFO";
-            head.createTime = DateTime.Parse("2017/11/22 14:14:03");
+            head.createTime = "2017/11/22 14:14:03";
             head.status = 1;
             head.errMsg = "";
 
@@ -121,7 +121,7 @@ namespace WebApplication1
             XMLInfo info = new XMLInfo();
             head head = new head();
             head.businessType = "ENTRYBILL_INFO";
-            head.createTime = DateTime.Parse("2017/11/22 14:14:03");
+            head.createTime = "2017/11/22 14:14:03";
             head.status = 1;
             head.errMsg = "";
             info.head = head;

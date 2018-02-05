@@ -2,13 +2,10 @@
 using DAL;
 using Model;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace HangZhouTran
 {
@@ -17,10 +14,11 @@ namespace HangZhouTran
         DataAction da = new DataAction();
         private volatile bool isRun = false;
         private readonly int LoopTime = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LoopTime"]);
-
+        private StringBuilder sbLog;
         public void BeginRun()
         {
             FileHelper.WriteLog("服务已启动");
+            sbLog = new StringBuilder();
             isRun = true;
             CheckDirectory();
 
@@ -61,9 +59,10 @@ namespace HangZhouTran
                 {
                     while (isRun)
                     {
+                        sbLog.Clear();
                         //FileHelper.WriteLog("开始读取数据");
                         UpdateHead();
-                        // FileHelper.WriteLog("操作完成");
+                        FileHelper.WriteLog(sbLog.ToString());
                         Thread.Sleep(LoopTime * 1000);
                     }
                 }
@@ -85,9 +84,7 @@ namespace HangZhouTran
                 {
                     while (isRun)
                     {
-                        //FileHelper.WriteLog("开始读取数据");
                         UpdateSendData();
-                        // FileHelper.WriteLog("操作完成");
                         Thread.Sleep(LoopTime * 1000);
                     }
                 }
@@ -141,8 +138,15 @@ namespace HangZhouTran
             return t;
         }
 
+        private void AppendTextWithTime(string msg)
+        {
+            sbLog.AppendFormat("{0}----{1}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), msg);
+        }
+
         private void UpdateHead()
         {
+
+
             try
             {
                 var ReadData = da.GetScanData();
@@ -155,58 +159,58 @@ namespace HangZhouTran
                     foreach (DataRow dr in ReadData.Rows)
                     {
                         bill_no = dr["bill_no"].ToString();
-                        FileHelper.WriteLog("---------------------------");
-                        FileHelper.WriteLog("获取到分运单号：" + bill_no);
+                        AppendTextWithTime("数据库获取到分运单号：" + bill_no);
                         var eData = ServerHelper.GetOutputData(bill_no);
-                        if (HasValue(eData))
+                        if (eData == null)
                         {
-                            FileHelper.WriteLog("获取到接口数据");
-
-                            //IorE = eData.Tables[0].Rows[0]["I_E_FLAG"].ToString();
-                            //if (IorE == "I")
-                            //{
-                            //    rs = da.UpdateHead_InPut(eData);
-                            //    FileHelper.WriteLog("更新进口数据 " + bill_no + (rs > 0 ? " 成功" : " 失败"));
-                            //}
-                            //else
-                            //{
-                            rs = da.UpdateHead_OutPut(eData);
-                            FileHelper.WriteLog("更新出口数据 " + bill_no + (rs > 0 ? " 成功" : " 失败"));
-                            //  }
-
-                            // var GJ_FLAG = eData.Tables[0].Rows[0]["GJ_FLAG"].ToString();
-                            // var R_FLAG = eData.Tables[0].Rows[0]["R_FLAG"].ToString();
-                            var RSK_FLAG = eData.body.ENTRYBILL_HEAD.RSK_FLAG;
-                            FileHelper.WriteLog("RSK_FLAG = " + RSK_FLAG);
-                            if (!RSK_FLAG)
-                            {
-                                oper = "000000";
-                                opTime = DateTime.Now;
-                                optype = "01";
-                                FileHelper.WriteLog("更新Head   bill_no:" + bill_no + " oper:" + oper + " optype:" + optype + " optime:" + opTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                                da.UpdateHeadOpType(bill_no, oper, optype, opTime);
-                                // PutData(bill_no, oper, optype, opTime);
-                            }
+                            AppendTextWithTime("未获取到接口数据");
+                            oper = "000000";
+                            opTime = DateTime.Now;
+                            optype = "04";
+                            AppendTextWithTime("更新Head   bill_no:" + bill_no + " oper:" + oper + " optype:" + optype + " optime:" + opTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                            da.UpdateHead_RequestFail(bill_no, oper, optype, opTime);
                         }
                         else
                         {
-                            string msg = eData.head.errMsg;
-                            if (msg == "没有查询结果")
+                            if (HasValue(eData))
                             {
-                                FileHelper.WriteLog("未获取到接口数据");
-                                oper = "000000";
-                                opTime = DateTime.Now;
-                                optype = "04";
-                                FileHelper.WriteLog("更新Head   bill_no:" + bill_no + " oper:" + oper + " optype:" + optype + " optime:" + opTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                                da.UpdateHead_RequestFail(bill_no, oper, optype, opTime);
+                                AppendTextWithTime("获取到接口数据");
+
+                                //IorE = eData.Tables[0].Rows[0]["I_E_FLAG"].ToString();
+                                //if (IorE == "I")
+                                //{
+                                //    rs = da.UpdateHead_InPut(eData);
+                                //    FileHelper.WriteLog("更新进口数据 " + bill_no + (rs > 0 ? " 成功" : " 失败"));
+                                //}
+                                //else
+                                //{
+                                CheckEXAMFlag(eData);
+                                rs = da.UpdateHead_OutPut(eData);
+                                AppendTextWithTime("更新出口数据 " + bill_no + (rs > 0 ? " 成功" : " 失败"));
+                                //  }
+
+                                // var GJ_FLAG = eData.Tables[0].Rows[0]["GJ_FLAG"].ToString();
+                                // var R_FLAG = eData.Tables[0].Rows[0]["R_FLAG"].ToString();
+                                //var RSK_FLAG =  eData.body.ENTRYBILL_HEAD.RSK_FLAG.ToLower() == "true" ? true : false;
+                                //FileHelper.WriteLog("RSK_FLAG = " + RSK_FLAG);
+                                //if (!RSK_FLAG)
+                                //{
+                                //    oper = "000000";
+                                //    opTime = DateTime.Now;
+                                //    optype = "01";
+                                //    FileHelper.WriteLog("更新Head   bill_no:" + bill_no + " oper:" + oper + " optype:" + optype + " optime:" + opTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                                //    da.UpdateHeadOpType(bill_no, oper, optype, opTime);
+                                //    // PutData(bill_no, oper, optype, opTime);
+                                //}
                             }
                             else
                             {
-                                FileHelper.WriteLog("读取错误，错误信息：" + msg);
+                                string msg = eData.head.errMsg;
+                                AppendTextWithTime("读取错误，错误信息：" + msg);
                             }
-                            // PutData(bill_no, oper, optype, opTime);
                         }
-                        FileHelper.WriteLog("---------------------------\r\n\r\n");
+
+                        sbLog.AppendLine("-------------------------------------------------------------\r\n");
                         //   Thread.Sleep(200);
                     }
                 }
@@ -214,6 +218,38 @@ namespace HangZhouTran
             catch (Exception ex)
             {
                 Loger.LogMessage(ex);
+            }
+        }
+
+        private void CheckEXAMFlag(XMLInfo data)
+        {
+            var examFlag = data.body.ENTRYBILL_HEAD.EXAM_FLAG.ToLower() == "true" ? true : false;
+            var rskFlag = data.body.ENTRYBILL_HEAD.RSK_FLAG.ToLower() == "true" ? true : false;
+            if (!examFlag)
+            {
+                data.body.ENTRYBILL_HEAD.R_FLAG = true;
+                data.body.ENTRYBILL_HEAD.GJ_FLAG = false;
+                data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
+                data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
+                data.body.ENTRYBILL_HEAD.Op_type = "01";
+
+            }
+            else if (!rskFlag)
+            {
+                data.body.ENTRYBILL_HEAD.R_FLAG = false;
+                data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
+                data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
+                data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
+                data.body.ENTRYBILL_HEAD.Op_type = "02";
+            }
+            else
+            {
+                data.body.ENTRYBILL_HEAD.R_FLAG = false;
+                data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
+                data.body.ENTRYBILL_HEAD.RSK_FLAG = "True";
+                data.body.ENTRYBILL_HEAD.Send_FLAG = "1";
+                data.body.ENTRYBILL_HEAD.Op_type = "03";
+
             }
         }
 
