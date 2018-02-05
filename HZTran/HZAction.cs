@@ -1,5 +1,6 @@
 ﻿using Common;
 using DAL;
+using Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,13 +17,13 @@ namespace HangZhouTran
         DataAction da = new DataAction();
         private volatile bool isRun = false;
         private readonly int LoopTime = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LoopTime"]);
-        private readonly int SaveResData = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveResData"]);
+
         public void BeginRun()
         {
             FileHelper.WriteLog("服务已启动");
             isRun = true;
+            CheckDirectory();
 
-          
             Thread MainThread = new Thread(RunTask);
             MainThread.IsBackground = true;
             MainThread.Name = "HangZhouXrayServer";
@@ -36,7 +37,20 @@ namespace HangZhouTran
 
         }
 
+        private void CheckDirectory()
+        {
+            var path = AppDomain.CurrentDomain.BaseDirectory + "responseFiles";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
 
+            path = AppDomain.CurrentDomain.BaseDirectory + "putResponseFiles";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
 
         object obRun = new object();
         private void RunTask()
@@ -147,11 +161,7 @@ namespace HangZhouTran
                         if (HasValue(eData))
                         {
                             FileHelper.WriteLog("获取到接口数据");
-                            if (SaveResData == 1)
-                            {
-                                var xmlFile = AppDomain.CurrentDomain.BaseDirectory + "responseFiles\\" + DateTime.Now.ToString("yyyyMMddHHmmssfff_") + bill_no + ".txt";
-                                XmlHelper.SerializerDataSetToFile(eData, xmlFile);
-                            }
+
                             //IorE = eData.Tables[0].Rows[0]["I_E_FLAG"].ToString();
                             //if (IorE == "I")
                             //{
@@ -166,27 +176,35 @@ namespace HangZhouTran
 
                             // var GJ_FLAG = eData.Tables[0].Rows[0]["GJ_FLAG"].ToString();
                             // var R_FLAG = eData.Tables[0].Rows[0]["R_FLAG"].ToString();
-                            var RSK_FLAG = eData.Tables[0].Rows[0]["RSK_FLAG"].ToString();
+                            var RSK_FLAG = eData.body.ENTRYBILL_HEAD.RSK_FLAG;
                             FileHelper.WriteLog("RSK_FLAG = " + RSK_FLAG);
-                            if (RSK_FLAG != "True")
+                            if (!RSK_FLAG)
                             {
                                 oper = "000000";
                                 opTime = DateTime.Now;
                                 optype = "01";
                                 FileHelper.WriteLog("更新Head   bill_no:" + bill_no + " oper:" + oper + " optype:" + optype + " optime:" + opTime.ToString("yyyy-MM-dd HH:mm:ss"));
                                 da.UpdateHeadOpType(bill_no, oper, optype, opTime);
-                               // PutData(bill_no, oper, optype, opTime);
+                                // PutData(bill_no, oper, optype, opTime);
                             }
                         }
                         else
                         {
-                            FileHelper.WriteLog("未获取到接口数据");
-                            oper = "000000";
-                            opTime = DateTime.Now;
-                            optype = "04";
-                            FileHelper.WriteLog("更新Head   bill_no:" + bill_no + " oper:" + oper + " optype:" + optype + " optime:" + opTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                            da.UpdateHead_RequestFail(bill_no, oper, optype, opTime);
-                           // PutData(bill_no, oper, optype, opTime);
+                            string msg = eData.head.errMsg;
+                            if (msg == "没有查询结果")
+                            {
+                                FileHelper.WriteLog("未获取到接口数据");
+                                oper = "000000";
+                                opTime = DateTime.Now;
+                                optype = "04";
+                                FileHelper.WriteLog("更新Head   bill_no:" + bill_no + " oper:" + oper + " optype:" + optype + " optime:" + opTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                                da.UpdateHead_RequestFail(bill_no, oper, optype, opTime);
+                            }
+                            else
+                            {
+                                FileHelper.WriteLog("读取错误，错误信息：" + msg);
+                            }
+                            // PutData(bill_no, oper, optype, opTime);
                         }
                         FileHelper.WriteLog("---------------------------\r\n\r\n");
                         //   Thread.Sleep(200);
@@ -201,13 +219,18 @@ namespace HangZhouTran
 
         private void PutData(string bill_no, string oper, string opType, DateTime dt)
         {
-            ServerHelper.putData(bill_no, oper, opType, dt);
+            ServerHelper.putData(bill_no, opType);
             da.UpdateHeadSendFlag(bill_no, "1");
         }
 
         private bool HasValue(DataSet eData)
         {
             return eData != null && eData.Tables.Count > 0 && eData.Tables[0].Rows.Count > 0;
+        }
+
+        private bool HasValue(XMLInfo eData)
+        {
+            return eData.head.status == 1;
         }
 
         private bool HasValue(DataTable eData)

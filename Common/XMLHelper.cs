@@ -123,7 +123,7 @@ namespace Common
             ds.WriteXml(fileName);
         }
 
-        private static void SaveToFile(string xmlString, string fileName)
+        public static void SaveToFile(string xmlString, string fileName)
         {
             if (!string.IsNullOrEmpty(xmlString))
             {

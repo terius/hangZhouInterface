@@ -9,26 +9,173 @@
 //------------------------------------------------------------------------------
 
 namespace HangZhouTran.ServiceReference1 {
-    using System.Data;
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ServiceReference1.yServiceSoap")]
     public interface yServiceSoap {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/GetData", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
-        System.Data.DataSet GetData(string wbNo);
+        // CODEGEN: 命名空间 http://tempuri.org/ 的元素名称 logistics_No 以后生成的消息协定未标记为 nillable
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/GetInfo", ReplyAction="*")]
+        HangZhouTran.ServiceReference1.GetInfoResponse GetInfo(HangZhouTran.ServiceReference1.GetInfoRequest request);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/GetData", ReplyAction="*")]
-        System.Threading.Tasks.Task<System.Data.DataSet> GetDataAsync(string wbNo);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/GetInfo", ReplyAction="*")]
+        System.Threading.Tasks.Task<HangZhouTran.ServiceReference1.GetInfoResponse> GetInfoAsync(HangZhouTran.ServiceReference1.GetInfoRequest request);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/PutData", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
-        void PutData(string wbNo, string opEr, string opType, System.DateTime opTime);
+        // CODEGEN: 命名空间 http://tempuri.org/ 的元素名称 logistics_No 以后生成的消息协定未标记为 nillable
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/SetExam", ReplyAction="*")]
+        HangZhouTran.ServiceReference1.SetExamResponse SetExam(HangZhouTran.ServiceReference1.SetExamRequest request);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/PutData", ReplyAction="*")]
-        System.Threading.Tasks.Task PutDataAsync(string wbNo, string opEr, string opType, System.DateTime opTime);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/SetExam", ReplyAction="*")]
+        System.Threading.Tasks.Task<HangZhouTran.ServiceReference1.SetExamResponse> SetExamAsync(HangZhouTran.ServiceReference1.SetExamRequest request);
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class GetInfoRequest {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="GetInfo", Namespace="http://tempuri.org/", Order=0)]
+        public HangZhouTran.ServiceReference1.GetInfoRequestBody Body;
+        
+        public GetInfoRequest() {
+        }
+        
+        public GetInfoRequest(HangZhouTran.ServiceReference1.GetInfoRequestBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class GetInfoRequestBody {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string logistics_No;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
+        public string app_No;
+        
+        public GetInfoRequestBody() {
+        }
+        
+        public GetInfoRequestBody(string logistics_No, string app_No) {
+            this.logistics_No = logistics_No;
+            this.app_No = app_No;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class GetInfoResponse {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="GetInfoResponse", Namespace="http://tempuri.org/", Order=0)]
+        public HangZhouTran.ServiceReference1.GetInfoResponseBody Body;
+        
+        public GetInfoResponse() {
+        }
+        
+        public GetInfoResponse(HangZhouTran.ServiceReference1.GetInfoResponseBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class GetInfoResponseBody {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string GetInfoResult;
+        
+        public GetInfoResponseBody() {
+        }
+        
+        public GetInfoResponseBody(string GetInfoResult) {
+            this.GetInfoResult = GetInfoResult;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class SetExamRequest {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="SetExam", Namespace="http://tempuri.org/", Order=0)]
+        public HangZhouTran.ServiceReference1.SetExamRequestBody Body;
+        
+        public SetExamRequest() {
+        }
+        
+        public SetExamRequest(HangZhouTran.ServiceReference1.SetExamRequestBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class SetExamRequestBody {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string logistics_No;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
+        public string app_No;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=2)]
+        public string exam_Type;
+        
+        public SetExamRequestBody() {
+        }
+        
+        public SetExamRequestBody(string logistics_No, string app_No, string exam_Type) {
+            this.logistics_No = logistics_No;
+            this.app_No = app_No;
+            this.exam_Type = exam_Type;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class SetExamResponse {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="SetExamResponse", Namespace="http://tempuri.org/", Order=0)]
+        public HangZhouTran.ServiceReference1.SetExamResponseBody Body;
+        
+        public SetExamResponse() {
+        }
+        
+        public SetExamResponse(HangZhouTran.ServiceReference1.SetExamResponseBody Body) {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class SetExamResponseBody {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string SetExamResult;
+        
+        public SetExamResponseBody() {
+        }
+        
+        public SetExamResponseBody(string SetExamResult) {
+            this.SetExamResult = SetExamResult;
+        }
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -58,20 +205,60 @@ namespace HangZhouTran.ServiceReference1 {
                 base(binding, remoteAddress) {
         }
         
-        public System.Data.DataSet GetData(string wbNo) {
-            return base.Channel.GetData(wbNo);
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        HangZhouTran.ServiceReference1.GetInfoResponse HangZhouTran.ServiceReference1.yServiceSoap.GetInfo(HangZhouTran.ServiceReference1.GetInfoRequest request) {
+            return base.Channel.GetInfo(request);
         }
         
-        public System.Threading.Tasks.Task<System.Data.DataSet> GetDataAsync(string wbNo) {
-            return base.Channel.GetDataAsync(wbNo);
+        public string GetInfo(string logistics_No, string app_No) {
+            HangZhouTran.ServiceReference1.GetInfoRequest inValue = new HangZhouTran.ServiceReference1.GetInfoRequest();
+            inValue.Body = new HangZhouTran.ServiceReference1.GetInfoRequestBody();
+            inValue.Body.logistics_No = logistics_No;
+            inValue.Body.app_No = app_No;
+            HangZhouTran.ServiceReference1.GetInfoResponse retVal = ((HangZhouTran.ServiceReference1.yServiceSoap)(this)).GetInfo(inValue);
+            return retVal.Body.GetInfoResult;
         }
         
-        public void PutData(string wbNo, string opEr, string opType, System.DateTime opTime) {
-            base.Channel.PutData(wbNo, opEr, opType, opTime);
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<HangZhouTran.ServiceReference1.GetInfoResponse> HangZhouTran.ServiceReference1.yServiceSoap.GetInfoAsync(HangZhouTran.ServiceReference1.GetInfoRequest request) {
+            return base.Channel.GetInfoAsync(request);
         }
         
-        public System.Threading.Tasks.Task PutDataAsync(string wbNo, string opEr, string opType, System.DateTime opTime) {
-            return base.Channel.PutDataAsync(wbNo, opEr, opType, opTime);
+        public System.Threading.Tasks.Task<HangZhouTran.ServiceReference1.GetInfoResponse> GetInfoAsync(string logistics_No, string app_No) {
+            HangZhouTran.ServiceReference1.GetInfoRequest inValue = new HangZhouTran.ServiceReference1.GetInfoRequest();
+            inValue.Body = new HangZhouTran.ServiceReference1.GetInfoRequestBody();
+            inValue.Body.logistics_No = logistics_No;
+            inValue.Body.app_No = app_No;
+            return ((HangZhouTran.ServiceReference1.yServiceSoap)(this)).GetInfoAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        HangZhouTran.ServiceReference1.SetExamResponse HangZhouTran.ServiceReference1.yServiceSoap.SetExam(HangZhouTran.ServiceReference1.SetExamRequest request) {
+            return base.Channel.SetExam(request);
+        }
+        
+        public string SetExam(string logistics_No, string app_No, string exam_Type) {
+            HangZhouTran.ServiceReference1.SetExamRequest inValue = new HangZhouTran.ServiceReference1.SetExamRequest();
+            inValue.Body = new HangZhouTran.ServiceReference1.SetExamRequestBody();
+            inValue.Body.logistics_No = logistics_No;
+            inValue.Body.app_No = app_No;
+            inValue.Body.exam_Type = exam_Type;
+            HangZhouTran.ServiceReference1.SetExamResponse retVal = ((HangZhouTran.ServiceReference1.yServiceSoap)(this)).SetExam(inValue);
+            return retVal.Body.SetExamResult;
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<HangZhouTran.ServiceReference1.SetExamResponse> HangZhouTran.ServiceReference1.yServiceSoap.SetExamAsync(HangZhouTran.ServiceReference1.SetExamRequest request) {
+            return base.Channel.SetExamAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<HangZhouTran.ServiceReference1.SetExamResponse> SetExamAsync(string logistics_No, string app_No, string exam_Type) {
+            HangZhouTran.ServiceReference1.SetExamRequest inValue = new HangZhouTran.ServiceReference1.SetExamRequest();
+            inValue.Body = new HangZhouTran.ServiceReference1.SetExamRequestBody();
+            inValue.Body.logistics_No = logistics_No;
+            inValue.Body.app_No = app_No;
+            inValue.Body.exam_Type = exam_Type;
+            return ((HangZhouTran.ServiceReference1.yServiceSoap)(this)).SetExamAsync(inValue);
         }
     }
 }

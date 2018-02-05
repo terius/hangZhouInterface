@@ -1,4 +1,6 @@
-﻿using DAL;
+﻿using Common;
+using DAL;
+using Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -24,20 +26,50 @@ namespace WebApplication1
         ///<param name="wbNo">运单号</param>
         ///<returns>出口清单或进口个人物品申报单</returns>
         [WebMethod]
-        public DataSet GetData(string wbNo)
+        public string GetInfo(string logistics_No, string app_No)
         {
-            DataSet ds = new DataSet();
-            //出口
-            DataTable head = DbHelperSQL.QueryReturnDataTable("select * from ENTRYBILL_HEAD where wb_no = '" + wbNo + "'");
-          
-            DataTable body = DbHelperSQL.QueryReturnDataTable("select * from ENTRYBILL_List where wb_no = '" + wbNo + "'");
-           
-         //   var head = head1.;
-            head.TableName = "ENTRYBILL_HEAD";
-        //    var body = head1;
-            body.TableName = "ENTRYBILL_LIST";
-            ds.Tables.Add(head);
-            ds.Tables.Add(body);
+            XMLInfo info = new XMLInfo();
+            head head = new head();
+            head.businessType = "ENTRYBILL_INFO";
+            head.createTime = DateTime.Parse("2017/11/22 14:14:03");
+            head.status = 1;
+            head.errMsg = "";
+
+            ENTRYBILL_HEAD h = new ENTRYBILL_HEAD();
+            h.ENTRY_NO = "QD350166852160019603245";
+            h.WB_NO = "fyd001";
+
+            List<ENTRYBILL_LIST> list = new List<ENTRYBILL_LIST>();
+            for (int i = 0; i < 2; i++)
+            {
+                ENTRYBILL_LIST l = new ENTRYBILL_LIST();
+                l.ENTRY_NO = "QD350166852160019603245";
+                l.PASS_NO = "QD350166852160019603245";
+                list.Add(l);
+            }
+
+
+            body body = new body();
+            body.ENTRYBILL_HEAD = h;
+            body.ENTRYBILL_LIST = list;
+            info.head = head;
+            info.body = body;
+
+            info.version = "1.0.0.1";
+            string x = XmlHelper.Serializer(info);
+            return x;
+            //    DataSet ds = new DataSet();
+            //    //出口
+            //    DataTable head = DbHelperSQL.QueryReturnDataTable("select * from ENTRYBILL_HEAD where wb_no = '" + wbNo + "'");
+
+            //    DataTable body = DbHelperSQL.QueryReturnDataTable("select * from ENTRYBILL_List where wb_no = '" + wbNo + "'");
+
+            // //   var head = head1.;
+            //    head.TableName = "ENTRYBILL_HEAD";
+            ////    var body = head1;
+            //    body.TableName = "ENTRYBILL_LIST";
+            //    ds.Tables.Add(head);
+            //    ds.Tables.Add(body);
 
             //dt.TableName = "ENTRYBILL_HEAD";
             //dt.Columns.Add("ENTRY_NO", typeof(string));
@@ -73,7 +105,7 @@ namespace WebApplication1
             //dtBody.Columns.Add("ORIGIN_COUNTRY", typeof(string));
             //dtBody.Columns.Add("TRADE_CURR", typeof(string));
 
-            return ds;
+            //    return ds;
         }
 
         ///<summary>
@@ -84,9 +116,18 @@ namespace WebApplication1
         ///<param name="opType">操作类型：01-放行；02-查验；03-捡入待处理区；04-暂停流水线并报警</param>
         ///<param name="opTime">操作时间</param>
         [WebMethod]
-        public void PutData(string wbNo, string opEr, string opType, DateTime opTime)
+        public string SetExam(string logistics_No, string app_No, string exam_Type)
         {
-            return;
+            XMLInfo info = new XMLInfo();
+            head head = new head();
+            head.businessType = "ENTRYBILL_INFO";
+            head.createTime = DateTime.Parse("2017/11/22 14:14:03");
+            head.status = 1;
+            head.errMsg = "";
+            info.head = head;
+            info.version = "1.0.0.1";
+            string x = XmlHelper.Serializer(info);
+            return x;
         }
     }
 

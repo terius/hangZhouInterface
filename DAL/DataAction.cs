@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
 using System.Collections;
+using Model;
 
 namespace DAL
 {
@@ -81,6 +82,45 @@ namespace DAL
             sqlparams.Add(new SqlParameter("@SEND_COUNTRY", drList["ORIGIN_COUNTRY"]));
             sqlparams.Add(new SqlParameter("@CURR_CODE", drList["TRADE_CURR"]));
             sqlparams.Add(new SqlParameter("@BILL_NO", drHead["WB_NO"]));
+            SqlParameter[] pps = sqlparams.ToArray();
+            return DbHelperSQL.ExecuteSql(UpdateHead_Output_SQL, pps);
+
+        }
+
+        public int UpdateHead_OutPut(XMLInfo info)
+        {
+            //if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            //{
+            //    DataRow drHead = ds.Tables[0].Rows[0];
+            //    DataRow drList = ds.Tables[1].Rows[0];
+            var head = info.body.ENTRYBILL_HEAD;
+            var list = info.body.ENTRYBILL_LIST[0];
+
+            IList<SqlParameter> sqlparams = new List<SqlParameter>();
+            sqlparams.Add(new SqlParameter("@VOYAGE_NO", head.ENTRY_NO));
+            sqlparams.Add(new SqlParameter("@L_D_PORT", head.TRADE_COUNTRY));
+            sqlparams.Add(new SqlParameter("@I_E_FLAG", head.I_E_FLAG));
+            sqlparams.Add(new SqlParameter("@I_E_PORT", head.I_E_PORT));
+            // sqlparams.Add(new SqlParameter("@I_E_DATE", drHead["I_E_DATE"]));
+            sqlparams.Add(new SqlParameter("@D_DATE", head.D_DATE));
+            sqlparams.Add(new SqlParameter("@TRADE_CODE", ""));
+            sqlparams.Add(new SqlParameter("@TRADE_NAME", head.TRADE_NAME));
+            sqlparams.Add(new SqlParameter("@OWNER_NAME", head.OWNER_NAME));
+            sqlparams.Add(new SqlParameter("@SEND_NAME", head.AGENT_NAME));
+            // sqlparams.Add(new SqlParameter("@TRAF_NAME", drHead["TRAF_NAME"]));
+            //  sqlparams.Add(new SqlParameter("@SHIP_ID", drHead["VOYAGE_NO"]));
+            sqlparams.Add(new SqlParameter("@PACK_NO", head.PACK_NO ));
+            sqlparams.Add(new SqlParameter("@GROSS_WT", head.GROSS_WT));
+            sqlparams.Add(new SqlParameter("@TOTAL_VALUE", head.DECL_TOTAL));
+            // sqlparams.Add(new SqlParameter("@NOTE", drHead["NOTE_S"]));
+            sqlparams.Add(new SqlParameter("@RG_FLAG", true));
+            sqlparams.Add(new SqlParameter("@GJ_FLAG", true));
+            sqlparams.Add(new SqlParameter("@RSK_FLAG", head.RSK_FLAG));
+            // sqlparams.Add(new SqlParameter("@R_FLAG", drHead["R_FLAG"]));
+            sqlparams.Add(new SqlParameter("@MAIN_G_NAME",list.G_NAME));
+            sqlparams.Add(new SqlParameter("@SEND_COUNTRY",list.ORIGIN_COUNTRY));
+            sqlparams.Add(new SqlParameter("@CURR_CODE",list.TRADE_CURR));
+            sqlparams.Add(new SqlParameter("@BILL_NO", head.WB_NO));
             SqlParameter[] pps = sqlparams.ToArray();
             return DbHelperSQL.ExecuteSql(UpdateHead_Output_SQL, pps);
 
