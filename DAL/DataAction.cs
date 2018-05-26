@@ -25,7 +25,7 @@ namespace DAL
             + "TRADE_NAME=@TRADE_NAME,OWNER_NAME=@OWNER_NAME,SEND_NAME=@SEND_NAME,TRAF_NAME=@TRAF_NAME,SHIP_ID=@SHIP_ID,PACK_NO=@PACK_NO,GROSS_WT=@GROSS_WT,TOTAL_VALUE=@TOTAL_VALUE,NOTE=@NOTE,"
             + "RG_FLAG=@RG_FLAG,GJ_FLAG=@GJ_FLAG,RSK_FLAG=@RSK_FLAG,MAIN_G_NAME=@MAIN_G_NAME,SEND_COUNTRY=@SEND_COUNTRY,SEND_CITY=@SEND_CITY,OPER=@OPER,DEC_DATE=@DEC_DATE,CURR_CODE=@CURR_CODE,READ_FLAG='1' where BILL_NO=@BILL_NO";
 
-
+        string updateReadFlagTo3SQL = "update {0} set read_flag='3',MAIN_G_NAME='异常' + MAIN_G_NAME,send_flag='1' where BILL_NO =@BILL_NO";
         private string updateSQL;
         public DataAction()
         {
@@ -36,6 +36,7 @@ namespace DAL
             UpdateHeadSendFlagSQL = string.Format(UpdateHeadSendFlagSQL, TableName);
             GetNoSendSQL = string.Format(GetNoSendSQL, TableName);
             UpdateHead_Input_SQL = string.Format(UpdateHead_Input_SQL, TableName);
+            updateReadFlagTo3SQL = string.Format(updateReadFlagTo3SQL, TableName);
         }
 
         public DataTable GetScanData()
@@ -221,6 +222,13 @@ namespace DAL
                 new SqlParameter("@BILL_NO",bill_no)
             };
             return DbHelperSQL.ExecuteSql(UpdateHeadSendFlagSQL, sqlparams);
+        }
+        public int UpdateReadFlagTo3(string bill_no)
+        {
+            SqlParameter[] sqlparams = {
+                new SqlParameter("@BILL_NO",bill_no)
+            };
+            return DbHelperSQL.ExecuteSql(updateReadFlagTo3SQL, sqlparams);
         }
     }
 }

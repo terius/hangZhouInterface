@@ -207,6 +207,7 @@ namespace HangZhouTran
                             {
                                 string msg = eData.head.errMsg;
                                 AppendTextWithTime("读取错误，错误信息：" + msg);
+                                da.UpdateReadFlagTo3(bill_no);
                             }
                         }
 
