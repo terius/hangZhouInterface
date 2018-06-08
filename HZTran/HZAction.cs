@@ -17,22 +17,30 @@ namespace HangZhouTran
         private StringBuilder sbLog;
         public void BeginRun()
         {
-            FileHelper.WriteLog("服务已启动");
-            sbLog = new StringBuilder();
-            isRun = true;
-            CheckDirectory();
-
-            Thread MainThread = new Thread(RunTask);
-            MainThread.IsBackground = true;
-            MainThread.Name = "HangZhouXrayServer";
-            MainThread.Start();
-
-            Thread MainThread2 = new Thread(RunTask2);
-            MainThread2.IsBackground = true;
-            MainThread2.Name = "HangZhouXrayServer2";
-            MainThread2.Start();
+            try
+            {
 
 
+                FileHelper.WriteLog("服务已启动");
+                sbLog = new StringBuilder();
+                isRun = true;
+                CheckDirectory();
+
+                Thread MainThread = new Thread(RunTask);
+                MainThread.IsBackground = true;
+                MainThread.Name = "HangZhouXrayServer";
+                MainThread.Start();
+
+                Thread MainThread2 = new Thread(RunTask2);
+                MainThread2.IsBackground = true;
+                MainThread2.Name = "HangZhouXrayServer2";
+                MainThread2.Start();
+
+            }
+            catch (Exception ex)
+            {
+                Loger.LogMessage("服务报错：" +ex.ToString());
+            }
         }
 
         private void CheckDirectory()
@@ -138,8 +146,14 @@ namespace HangZhouTran
             return t;
         }
 
+
+        readonly int _saveLog = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveLog"]);
         private void AppendTextWithTime(string msg)
         {
+            if (_saveLog != 1)
+            {
+                return;
+            }
             sbLog.AppendFormat("{0}----{1}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), msg);
         }
 

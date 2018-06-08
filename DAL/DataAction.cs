@@ -11,7 +11,7 @@ namespace DAL
     public class DataAction
     {
         private readonly string TableName = System.Configuration.ConfigurationManager.AppSettings["TableName"];
-        private string GetHeadSQL = "select top 100  bill_no from {0} where read_flag = '0'";
+        private string GetHeadSQL = "select  bill_no from {0} where read_flag = '0'";
         private string UpdateHead_Output_SQL = "update {0} set VOYAGE_NO=@VOYAGE_NO,L_D_PORT=@L_D_PORT,I_E_FLAG=@I_E_FLAG,I_E_PORT=@I_E_PORT,D_DATE=@D_DATE,TRADE_CODE=@TRADE_CODE,"
             + "TRADE_NAME=@TRADE_NAME,OWNER_NAME=@OWNER_NAME,SEND_NAME=@SEND_NAME,PACK_NO=@PACK_NO,GROSS_WT=@GROSS_WT,TOTAL_VALUE=@TOTAL_VALUE,"
             + "RG_FLAG=@RG_FLAG,GJ_FLAG=@GJ_FLAG,RSK_FLAG=@RSK_FLAG,MAIN_G_NAME=@MAIN_G_NAME,SEND_COUNTRY=@SEND_COUNTRY,CURR_CODE=@CURR_CODE,READ_FLAG='1' where BILL_NO=@BILL_NO";
