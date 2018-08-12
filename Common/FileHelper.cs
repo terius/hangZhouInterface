@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Common
 {
@@ -12,7 +9,7 @@ namespace Common
     {
         const int LOCK = 500; //申请读写时间
         const int SLEEP = 100; //线程挂起时间
-        static ReaderWriterLock readWriteLock = new ReaderWriterLock();
+        static ReaderWriterLockSlim readWriteLock = new ReaderWriterLockSlim();
         private static readonly int SaveLog = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveLog"]);
 
         public static void WriteLog(string msg) //写入文件
@@ -21,7 +18,7 @@ namespace Common
             {
                 return;
             }
-            readWriteLock.AcquireWriterLock(LOCK);
+            readWriteLock.EnterWriteLock();
             try
             {
 
@@ -44,7 +41,7 @@ namespace Common
                     sw.Flush();
                     sw.Close();
                 }
-                Thread.Sleep(SLEEP);
+              //  Thread.Sleep(SLEEP);
 
             }
             catch (Exception ex)
@@ -53,7 +50,7 @@ namespace Common
             }
             finally
             {
-                readWriteLock.ReleaseWriterLock();
+                readWriteLock.ExitWriteLock();
             }
         }
     }

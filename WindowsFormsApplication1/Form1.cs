@@ -1,5 +1,6 @@
 ﻿using Common;
 using DAL;
+using Model;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -26,8 +27,10 @@ namespace WindowsFormsApplication1
             //    ServiceReference1.yServiceSoapClient client = new ServiceReference1.yServiceSoapClient();
             //     var data = client.GetData("fyd001");
 
-            HangZhouTran.HZAction action = new HangZhouTran.HZAction();
-            action.BeginRun();
+            //  HangZhouTran.HZAction action = new HangZhouTran.HZAction();
+            //  action.BeginRun();
+
+            var xx = XmlHelper.DeserializeFromFile<NEWXMLInfo>(@"C:\Users\teriushome\Desktop\新建文件夹\新1.txt");
         }
 
 

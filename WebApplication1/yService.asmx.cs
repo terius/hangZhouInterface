@@ -28,36 +28,37 @@ namespace WebApplication1
         [WebMethod]
         public string GetInfo(string logistics_No, string app_No)
         {
-            XMLInfo info = new XMLInfo();
-            head head = new head();
-            head.businessType = "ENTRYBILL_INFO";
-            head.createTime = "2017/11/22 14:14:03";
-            head.status = 1;
-            head.errMsg = "";
+            return "";
+            //XMLInfo_OLD info = new XMLInfo_OLD();
+            //head head = new head();
+            //head.businessType = "ENTRYBILL_INFO";
+            //head.createTime = "2017/11/22 14:14:03";
+            //head.status = 1;
+            //head.errMsg = "";
 
-            ENTRYBILL_HEAD h = new ENTRYBILL_HEAD();
-            h.ENTRY_NO = "QD350166852160019603245";
-            h.WB_NO = "fyd001";
+            //ENTRYBILL_HEAD h = new ENTRYBILL_HEAD();
+            //h.ENTRY_NO = "QD350166852160019603245";
+            //h.WB_NO = "fyd001";
 
-            List<ENTRYBILL_LIST> list = new List<ENTRYBILL_LIST>();
-            for (int i = 0; i < 2; i++)
-            {
-                ENTRYBILL_LIST l = new ENTRYBILL_LIST();
-                l.ENTRY_NO = "QD350166852160019603245";
-                l.PASS_NO = "QD350166852160019603245";
-                list.Add(l);
-            }
+            //List<ENTRYBILL_LIST> list = new List<ENTRYBILL_LIST>();
+            //for (int i = 0; i < 2; i++)
+            //{
+            //    ENTRYBILL_LIST l = new ENTRYBILL_LIST();
+            //    l.ENTRY_NO = "QD350166852160019603245";
+            //    l.PASS_NO = "QD350166852160019603245";
+            //    list.Add(l);
+            //}
 
 
-            body body = new body();
-            body.ENTRYBILL_HEAD = h;
-            body.ENTRYBILL_LIST = list;
-            info.head = head;
-            info.body = body;
+            //body body = new body();
+            //body.ENTRYBILL_HEAD = h;
+            //body.ENTRYBILL_LIST = list;
+            //info.head = head;
+            //info.body = body;
 
-            info.version = "1.0.0.1";
-            string x = XmlHelper.Serializer(info);
-            return x;
+            //info.version = "1.0.0.1";
+            //string x = XmlHelper.Serializer(info);
+            //return x;
             //    DataSet ds = new DataSet();
             //    //出口
             //    DataTable head = DbHelperSQL.QueryReturnDataTable("select * from ENTRYBILL_HEAD where wb_no = '" + wbNo + "'");
@@ -108,26 +109,30 @@ namespace WebApplication1
             //    return ds;
         }
 
-        ///<summary>
-        ///返回操作结果
-        ///</summary>
-        ///<param name="wbNo">运单号</param>
-        ///<param name="opEr">操作人</param>
-        ///<param name="opType">操作类型：01-放行；02-查验；03-捡入待处理区；04-暂停流水线并报警</param>
-        ///<param name="opTime">操作时间</param>
+        /// <summary>
+        /// 返回操作结果
+        /// </summary>
+        /// <param name="logistics_No"></param>
+        /// <param name="app_No"></param>
+        /// <param name="checkWay"></param>
+        /// <param name="checkResult"></param>
+        /// <param name="inspectionStatus"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         [WebMethod]
-        public string SetExam(string logistics_No, string app_No, string exam_Type)
+        public String SetExam(String logistics_No, String app_No, int checkWay, int checkResult, int inspectionStatus, string result)
         {
-            XMLInfo info = new XMLInfo();
-            head head = new head();
-            head.businessType = "ENTRYBILL_INFO";
-            head.createTime = "2017/11/22 14:14:03";
-            head.status = 1;
-            head.errMsg = "";
-            info.head = head;
-            info.version = "1.0.0.1";
-            string x = XmlHelper.Serializer(info);
-            return x;
+            //XMLInfo_OLD info = new XMLInfo_OLD();
+            //head_old head = new head_old();
+            //head.businessType = "ENTRYBILL_INFO";
+            //head.createTime = "2017/11/22 14:14:03";
+            //head.status = 1;
+            //head.errMsg = "";
+            //info.head = head;
+            //info.version = "1.0.0.1";
+            //string x = XmlHelper.Serializer(info);
+            //return x;
+            return "";
         }
     }
 

@@ -131,16 +131,28 @@ namespace HangZhouTran.ServiceReference1 {
         [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
         public string app_No;
         
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=2)]
-        public string exam_Type;
+        [System.Runtime.Serialization.DataMemberAttribute(Order=2)]
+        public int checkWay;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(Order=3)]
+        public int checkResult;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(Order=4)]
+        public int inspectionStatus;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=5)]
+        public string result;
         
         public SetExamRequestBody() {
         }
         
-        public SetExamRequestBody(string logistics_No, string app_No, string exam_Type) {
+        public SetExamRequestBody(string logistics_No, string app_No, int checkWay, int checkResult, int inspectionStatus, string result) {
             this.logistics_No = logistics_No;
             this.app_No = app_No;
-            this.exam_Type = exam_Type;
+            this.checkWay = checkWay;
+            this.checkResult = checkResult;
+            this.inspectionStatus = inspectionStatus;
+            this.result = result;
         }
     }
     
@@ -237,12 +249,15 @@ namespace HangZhouTran.ServiceReference1 {
             return base.Channel.SetExam(request);
         }
         
-        public string SetExam(string logistics_No, string app_No, string exam_Type) {
+        public string SetExam(string logistics_No, string app_No, int checkWay, int checkResult, int inspectionStatus, string result) {
             HangZhouTran.ServiceReference1.SetExamRequest inValue = new HangZhouTran.ServiceReference1.SetExamRequest();
             inValue.Body = new HangZhouTran.ServiceReference1.SetExamRequestBody();
             inValue.Body.logistics_No = logistics_No;
             inValue.Body.app_No = app_No;
-            inValue.Body.exam_Type = exam_Type;
+            inValue.Body.checkWay = checkWay;
+            inValue.Body.checkResult = checkResult;
+            inValue.Body.inspectionStatus = inspectionStatus;
+            inValue.Body.result = result;
             HangZhouTran.ServiceReference1.SetExamResponse retVal = ((HangZhouTran.ServiceReference1.yServiceSoap)(this)).SetExam(inValue);
             return retVal.Body.SetExamResult;
         }
@@ -252,12 +267,15 @@ namespace HangZhouTran.ServiceReference1 {
             return base.Channel.SetExamAsync(request);
         }
         
-        public System.Threading.Tasks.Task<HangZhouTran.ServiceReference1.SetExamResponse> SetExamAsync(string logistics_No, string app_No, string exam_Type) {
+        public System.Threading.Tasks.Task<HangZhouTran.ServiceReference1.SetExamResponse> SetExamAsync(string logistics_No, string app_No, int checkWay, int checkResult, int inspectionStatus, string result) {
             HangZhouTran.ServiceReference1.SetExamRequest inValue = new HangZhouTran.ServiceReference1.SetExamRequest();
             inValue.Body = new HangZhouTran.ServiceReference1.SetExamRequestBody();
             inValue.Body.logistics_No = logistics_No;
             inValue.Body.app_No = app_No;
-            inValue.Body.exam_Type = exam_Type;
+            inValue.Body.checkWay = checkWay;
+            inValue.Body.checkResult = checkResult;
+            inValue.Body.inspectionStatus = inspectionStatus;
+            inValue.Body.result = result;
             return ((HangZhouTran.ServiceReference1.yServiceSoap)(this)).SetExamAsync(inValue);
         }
     }

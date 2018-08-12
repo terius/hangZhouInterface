@@ -17,22 +17,30 @@ namespace HangZhouTran
         private StringBuilder sbLog;
         public void BeginRun()
         {
-            FileHelper.WriteLog("服务已启动");
-            sbLog = new StringBuilder();
-            isRun = true;
-            CheckDirectory();
-
-            Thread MainThread = new Thread(RunTask);
-            MainThread.IsBackground = true;
-            MainThread.Name = "HangZhouXrayServer";
-            MainThread.Start();
-
-            Thread MainThread2 = new Thread(RunTask2);
-            MainThread2.IsBackground = true;
-            MainThread2.Name = "HangZhouXrayServer2";
-            MainThread2.Start();
+            try
+            {
 
 
+                FileHelper.WriteLog("服务已启动");
+                sbLog = new StringBuilder();
+                isRun = true;
+                CheckDirectory();
+
+                Thread MainThread = new Thread(RunTask);
+                MainThread.IsBackground = true;
+                MainThread.Name = "HangZhouXrayServer";
+                MainThread.Start();
+
+                Thread MainThread2 = new Thread(RunTask2);
+                MainThread2.IsBackground = true;
+                MainThread2.Name = "HangZhouXrayServer2";
+                MainThread2.Start();
+
+            }
+            catch (Exception ex)
+            {
+                Loger.LogMessage("服务报错：" + ex.ToString());
+            }
         }
 
         private void CheckDirectory()
@@ -138,8 +146,14 @@ namespace HangZhouTran
             return t;
         }
 
+
+        readonly int _saveLog = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveLog"]);
         private void AppendTextWithTime(string msg)
         {
+            if (_saveLog != 1)
+            {
+                return;
+            }
             sbLog.AppendFormat("{0}----{1}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), msg);
         }
 
@@ -175,6 +189,8 @@ namespace HangZhouTran
                             if (HasValue(eData))
                             {
                                 AppendTextWithTime("获取到接口数据");
+                               
+
 
                                 //IorE = eData.Tables[0].Rows[0]["I_E_FLAG"].ToString();
                                 //if (IorE == "I")
@@ -184,8 +200,9 @@ namespace HangZhouTran
                                 //}
                                 //else
                                 //{
-                                CheckEXAMFlag(eData);
-                                rs = da.UpdateHead_OutPut(eData);
+                                //     CheckEXAMFlag(eData);
+
+                                rs =  da.UpdateHead_OutPut(eData);
                                 AppendTextWithTime("更新出口数据 " + bill_no + (rs > 0 ? " 成功" : " 失败"));
                                 //  }
 
@@ -222,37 +239,39 @@ namespace HangZhouTran
             }
         }
 
-        private void CheckEXAMFlag(XMLInfo data)
-        {
-            var examFlag = data.body.ENTRYBILL_HEAD.EXAM_FLAG.ToLower() == "true" ? true : false;
-            var rskFlag = data.body.ENTRYBILL_HEAD.RSK_FLAG.ToLower() == "true" ? true : false;
-            if (!examFlag)
-            {
-                data.body.ENTRYBILL_HEAD.R_FLAG = true;
-                data.body.ENTRYBILL_HEAD.GJ_FLAG = false;
-                data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
-                data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
-                data.body.ENTRYBILL_HEAD.Op_type = "01";
+       
 
-            }
-            else if (!rskFlag)
-            {
-                data.body.ENTRYBILL_HEAD.R_FLAG = false;
-                data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
-                data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
-                data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
-                data.body.ENTRYBILL_HEAD.Op_type = "02";
-            }
-            else
-            {
-                data.body.ENTRYBILL_HEAD.R_FLAG = false;
-                data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
-                data.body.ENTRYBILL_HEAD.RSK_FLAG = "True";
-                data.body.ENTRYBILL_HEAD.Send_FLAG = "1";
-                data.body.ENTRYBILL_HEAD.Op_type = "03";
+        //private void CheckEXAMFlag(XMLInfo_OLD data)
+        //{
+        //    var examFlag = data.body.ENTRYBILL_HEAD.EXAM_FLAG.ToLower() == "true" ? true : false;
+        //    var rskFlag = data.body.ENTRYBILL_HEAD.RSK_FLAG.ToLower() == "true" ? true : false;
+        //    if (!examFlag)
+        //    {
+        //        data.body.ENTRYBILL_HEAD.R_FLAG = true;
+        //        data.body.ENTRYBILL_HEAD.GJ_FLAG = false;
+        //        data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
+        //        data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
+        //        data.body.ENTRYBILL_HEAD.Op_type = "01";
 
-            }
-        }
+        //    }
+        //    else if (!rskFlag)
+        //    {
+        //        data.body.ENTRYBILL_HEAD.R_FLAG = false;
+        //        data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
+        //        data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
+        //        data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
+        //        data.body.ENTRYBILL_HEAD.Op_type = "02";
+        //    }
+        //    else
+        //    {
+        //        data.body.ENTRYBILL_HEAD.R_FLAG = false;
+        //        data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
+        //        data.body.ENTRYBILL_HEAD.RSK_FLAG = "True";
+        //        data.body.ENTRYBILL_HEAD.Send_FLAG = "1";
+        //        data.body.ENTRYBILL_HEAD.Op_type = "03";
+
+        //    }
+        //}
 
         private void PutData(string bill_no, string oper, string opType, DateTime dt)
         {
@@ -265,7 +284,7 @@ namespace HangZhouTran
             return eData != null && eData.Tables.Count > 0 && eData.Tables[0].Rows.Count > 0;
         }
 
-        private bool HasValue(XMLInfo eData)
+        private bool HasValue(NEWXMLInfo eData)
         {
             return eData.head.status == 1;
         }

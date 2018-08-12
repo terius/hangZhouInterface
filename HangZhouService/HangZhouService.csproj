@@ -71,6 +71,12 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Properties\DataSources\System.Data.DataSet.datasource" />
+    <None Include="Service References\ServiceReference1\HangZhouService.ServiceReference1.GetInfoResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\ServiceReference1\HangZhouService.ServiceReference1.SetExamResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Service References\ServiceReference1\yService.wsdl" />
   </ItemGroup>
   <ItemGroup>

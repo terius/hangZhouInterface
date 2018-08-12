@@ -11,7 +11,7 @@ namespace DAL
     public class DataAction
     {
         private readonly string TableName = System.Configuration.ConfigurationManager.AppSettings["TableName"];
-        private string GetHeadSQL = "select top 100  bill_no from {0} where read_flag = '0'";
+        private string GetHeadSQL = "select  bill_no from {0} where read_flag = '0'";
         private string UpdateHead_Output_SQL = "update {0} set VOYAGE_NO=@VOYAGE_NO,L_D_PORT=@L_D_PORT,I_E_FLAG=@I_E_FLAG,I_E_PORT=@I_E_PORT,D_DATE=@D_DATE,TRADE_CODE=@TRADE_CODE,"
             + "TRADE_NAME=@TRADE_NAME,OWNER_NAME=@OWNER_NAME,SEND_NAME=@SEND_NAME,PACK_NO=@PACK_NO,GROSS_WT=@GROSS_WT,TOTAL_VALUE=@TOTAL_VALUE,"
             + "RG_FLAG=@RG_FLAG,GJ_FLAG=@GJ_FLAG,RSK_FLAG=@RSK_FLAG,MAIN_G_NAME=@MAIN_G_NAME,SEND_COUNTRY=@SEND_COUNTRY,CURR_CODE=@CURR_CODE,READ_FLAG='1' where BILL_NO=@BILL_NO";
@@ -88,7 +88,7 @@ namespace DAL
 
         //}
 
-        public int UpdateHead_OutPut(XMLInfo info)
+        public int UpdateHead_OutPut(NEWXMLInfo info)
         {
             //if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             //{
@@ -96,38 +96,46 @@ namespace DAL
             //    DataRow drList = ds.Tables[1].Rows[0];
             var head = info.body.ENTRYBILL_HEAD;
             var list = info.body.ENTRYBILL_LIST[0];
-            var rskFlag = info.body.ENTRYBILL_HEAD.RSK_FLAG.ToLower() == "true" ? true : false;
+            var INSPECTION_STATUS = head.INSPECTION_STATUS;
+            string opType = "01";
+            string send_flag = "0";
+            if (INSPECTION_STATUS == "查验")
+            {
+                opType = "02";
+                send_flag = "1";
+            }
+            // var rskFlag = info.body.ENTRYBILL_HEAD.RSK_FLAG.ToLower() == "true" ? true : false;
 
             IList<SqlParameter> sqlparams = new List<SqlParameter>();
-            sqlparams.Add(new SqlParameter("@VOYAGE_NO", head.ENTRY_NO));
-            sqlparams.Add(new SqlParameter("@L_D_PORT", head.TRADE_COUNTRY));
+            sqlparams.Add(new SqlParameter("@VOYAGE_NO", head.INVT_NO));
+            sqlparams.Add(new SqlParameter("@L_D_PORT", head.COUNTRY));
             sqlparams.Add(new SqlParameter("@I_E_FLAG", head.I_E_FLAG));
-            sqlparams.Add(new SqlParameter("@I_E_PORT", head.I_E_PORT));
+            sqlparams.Add(new SqlParameter("@I_E_PORT", head.DISTRICT_CUSTOMS));
             // sqlparams.Add(new SqlParameter("@I_E_DATE", drHead["I_E_DATE"]));
-            sqlparams.Add(new SqlParameter("@D_DATE", head.D_DATE));
-            sqlparams.Add(new SqlParameter("@TRADE_CODE", ""));
-            sqlparams.Add(new SqlParameter("@TRADE_NAME", head.TRADE_NAME));
-            sqlparams.Add(new SqlParameter("@OWNER_NAME", head.OWNER_NAME));
+         //   sqlparams.Add(new SqlParameter("@D_DATE", head.D_DATE));
+            sqlparams.Add(new SqlParameter("@TRADE_CODE", head.LOGISTICS_CODE));
+            sqlparams.Add(new SqlParameter("@TRADE_NAME", head.LOGISTICS_NAME));
+            sqlparams.Add(new SqlParameter("@OWNER_NAME", head.AREA_NAME));
             sqlparams.Add(new SqlParameter("@SEND_NAME", head.AGENT_NAME));
             // sqlparams.Add(new SqlParameter("@TRAF_NAME", drHead["TRAF_NAME"]));
             //  sqlparams.Add(new SqlParameter("@SHIP_ID", drHead["VOYAGE_NO"]));
             sqlparams.Add(new SqlParameter("@PACK_NO", head.PACK_NO));
-            sqlparams.Add(new SqlParameter("@GROSS_WT", head.GROSS_WT));
-            sqlparams.Add(new SqlParameter("@TOTAL_VALUE", head.DECL_TOTAL));
+            sqlparams.Add(new SqlParameter("@GROSS_WT", head.GROSS_WEIGHT));
+            sqlparams.Add(new SqlParameter("@TOTAL_VALUE", list.TOTAL_PRICE));
             // sqlparams.Add(new SqlParameter("@NOTE", drHead["NOTE_S"]));
             // sqlparams.Add(new SqlParameter("@RG_FLAG", true));
-            sqlparams.Add(new SqlParameter("@GJ_FLAG", head.GJ_FLAG));
-            sqlparams.Add(new SqlParameter("@RSK_FLAG", rskFlag));
-            sqlparams.Add(new SqlParameter("@R_FLAG", head.R_FLAG));
-            sqlparams.Add(new SqlParameter("@SEND_FLAG", head.Send_FLAG));
+          //  sqlparams.Add(new SqlParameter("@GJ_FLAG", head.GJ_FLAG));
+          //  sqlparams.Add(new SqlParameter("@RSK_FLAG", rskFlag));
+        //    sqlparams.Add(new SqlParameter("@R_FLAG", head.R_FLAG));
+            sqlparams.Add(new SqlParameter("@SEND_FLAG", send_flag));
             sqlparams.Add(new SqlParameter("@OPER", "000000"));
-            sqlparams.Add(new SqlParameter("@OP_TYPE", head.Op_type));
+            sqlparams.Add(new SqlParameter("@OP_TYPE", opType));
             sqlparams.Add(new SqlParameter("@READ_FLAG", "1"));
             // sqlparams.Add(new SqlParameter("@R_FLAG", drHead["R_FLAG"]));
-            sqlparams.Add(new SqlParameter("@MAIN_G_NAME", list.G_NAME));
-            sqlparams.Add(new SqlParameter("@SEND_COUNTRY", list.ORIGIN_COUNTRY));
-            sqlparams.Add(new SqlParameter("@CURR_CODE", list.TRADE_CURR));
-            sqlparams.Add(new SqlParameter("@BILL_NO", head.WB_NO));
+            sqlparams.Add(new SqlParameter("@MAIN_G_NAME", list.ITEM_NAME));
+            sqlparams.Add(new SqlParameter("@SEND_COUNTRY", list.COUNTRY));
+            sqlparams.Add(new SqlParameter("@CURR_CODE", list.CURRENCY));
+            sqlparams.Add(new SqlParameter("@BILL_NO", head.LOGISTICS_NO));
             SqlParameter[] pps = sqlparams.ToArray();
             if (string.IsNullOrEmpty(updateSQL))
             {

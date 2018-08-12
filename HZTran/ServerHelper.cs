@@ -10,12 +10,12 @@ namespace HangZhouTran
         static ServiceReference1.yServiceSoapClient client = new ServiceReference1.yServiceSoapClient();
         static readonly string appNo = System.Configuration.ConfigurationManager.AppSettings["APPNO"];
         static readonly int SaveResData = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveResData"]);
-        public static XMLInfo GetOutputData(string wbNo)
+        public static NEWXMLInfo GetOutputData(string wbNo)
         {
 
             //var file = XmlHelper.DeserializeFromFile<XMLInfo>("d:\\222.txt");
             //return file;
-            XMLInfo info = null;
+            NEWXMLInfo info = null;
             try
             {
                 var data = client.GetInfo(wbNo, appNo);
@@ -29,7 +29,7 @@ namespace HangZhouTran
                 {
                     return null;
                 }
-                info = XmlHelper.Deserialize<XMLInfo>(data);
+                info = XmlHelper.Deserialize<NEWXMLInfo>(data);
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace HangZhouTran
         {
             try
             {
-                var data = client.SetExam(wbNo, appNo, opType);
+                var data = client.SetExam(wbNo, appNo, 1, 1, 26, "");
                 if (SaveResData == 1)
                 {
                     var path = CreateFilePath("putResponseFiles");

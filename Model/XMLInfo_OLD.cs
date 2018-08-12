@@ -6,15 +6,15 @@ namespace Model
 {
     [Serializable]
     [XmlRoot("mo")]
-    public class XMLInfo
+    public class XMLInfo_OLD
     {
         [XmlAttribute("version")]
         public string version { get; set; }
-        public head head { get; set; }
-        public body body { get; set; }
+        public head_old head { get; set; }
+        public body_old body { get; set; }
     }
 
-    public class head
+    public class head_old
     {
         public string businessType { get; set; }
         public string createTime { get; set; }
@@ -23,15 +23,15 @@ namespace Model
     }
 
 
-    public class body
+    public class body_old
     {
-        public ENTRYBILL_HEAD ENTRYBILL_HEAD { get; set; }
+        public ENTRYBILL_HEAD_old ENTRYBILL_HEAD { get; set; }
 
         [XmlElement("ENTRYBILL_LIST")]
-        public List<ENTRYBILL_LIST> ENTRYBILL_LIST { get; set; }
+        public List<ENTRYBILL_LIST_old> ENTRYBILL_LIST { get; set; }
     }
 
-    public class ENTRYBILL_HEAD
+    public class ENTRYBILL_HEAD_old
     {
         public string ENTRY_NO { get; set; }
         public string WB_NO { get; set; }
@@ -71,7 +71,7 @@ namespace Model
         public string Op_type { get; set; }
     }
 
-    public class ENTRYBILL_LIST
+    public class ENTRYBILL_LIST_old
     {
         public string ENTRY_NO { get; set; }
         public string PASS_NO { get; set; }
