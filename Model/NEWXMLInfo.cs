@@ -30,7 +30,7 @@ namespace Model
         public ENTRYBILL_HEAD ENTRYBILL_HEAD { get; set; }
 
         [XmlElement("CBEE_ELIST_ITEM")]
-        public List<ENTRYBILL_LIST> ENTRYBILL_LIST { get; set; }
+        public ENTRYBILL_LIST ENTRYBILL_LIST { get; set; }
     }
 
     public class ENTRYBILL_HEAD
@@ -152,7 +152,7 @@ namespace Model
         /// <summary>
         /// 直属关区代码
         /// </summary>
-        [StringLength(8)]
+        [StringLength(18)]
         public string DISTRICT_CUSTOMS { get; set; }
 
         /// <summary>
@@ -277,4 +277,7 @@ namespace Model
 
 
     }
+
+
+  
 }

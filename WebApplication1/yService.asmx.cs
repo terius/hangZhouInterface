@@ -1,11 +1,7 @@
 ﻿using Common;
-using DAL;
-using Model;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Web;
+using System.IO;
+using System.Threading;
 using System.Web.Services;
 
 namespace WebApplication1
@@ -20,6 +16,8 @@ namespace WebApplication1
     // [System.Web.Script.Services.ScriptService]
     public class yService : System.Web.Services.WebService
     {
+        
+        string filePath = System.AppDomain.CurrentDomain.BaseDirectory;
         ///<summary>
         ///获取出口清单或进口个人物品申报单数据,没有找到数据返回null
         ///</summary>
@@ -28,7 +26,11 @@ namespace WebApplication1
         [WebMethod]
         public string GetInfo(string logistics_No, string app_No)
         {
-            return "";
+            Thread.Sleep(5000);
+            string aa = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            //  return "";
+            var str = XmlHelper.ReadXMLToString(Path.Combine(filePath, "1.txt"));
+            return str;
             //XMLInfo_OLD info = new XMLInfo_OLD();
             //head head = new head();
             //head.businessType = "ENTRYBILL_INFO";

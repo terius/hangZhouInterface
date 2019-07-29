@@ -95,7 +95,7 @@ namespace DAL
             //    DataRow drHead = ds.Tables[0].Rows[0];
             //    DataRow drList = ds.Tables[1].Rows[0];
             var head = info.body.ENTRYBILL_HEAD;
-            var list = info.body.ENTRYBILL_LIST[0];
+            var list = info.body.ENTRYBILL_LIST;
             var INSPECTION_STATUS = head.INSPECTION_STATUS;
             string opType = "01";
             string send_flag = "0";

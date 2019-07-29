@@ -71,6 +71,10 @@ namespace Common
 
                 return (T)xs.Deserialize(fs);
             }
+            catch (Exception ex)
+            {
+                return default(T);
+            }
             finally
             {
                 if (fs != null)
