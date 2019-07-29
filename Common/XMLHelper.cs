@@ -25,17 +25,38 @@ namespace Common
         {
             try
             {
-                using (StringReader sr = new StringReader(xml))
+                Encoding encoding = Encoding.UTF8;
+                XmlSerializer mySerializer = new XmlSerializer(typeof(T));
+                using (MemoryStream ms = new MemoryStream(encoding.GetBytes(xml)))
                 {
-                    XmlSerializer xmldes = new XmlSerializer(typeof(T));
-                    return (T)xmldes.Deserialize(sr);
+                    using (StreamReader sr = new StreamReader(ms, encoding))
+                    {
+                        return (T)mySerializer.Deserialize(sr);
+                    }
                 }
             }
             catch (Exception e)
             {
-
                 return default(T);
             }
+          
+
+
+
+            //try
+            //{
+            //    using (StringReader sr = new StringReader(xml))
+            //    {
+            //        XmlSerializer xmldes = new XmlSerializer(typeof(T));
+                
+            //        return (T)xmldes.Deserialize(sr);
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+
+            //    return default(T);
+            //}
         }
 
 
@@ -81,15 +102,19 @@ namespace Common
         public static string Serializer<T>(T obj)
         {
             MemoryStream Stream = new MemoryStream();
+        
             XmlSerializer xml = new XmlSerializer(typeof(T));
+          
             try
             {
                 XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
 
                 //Add an empty namespace and empty value
                 ns.Add("", "");
+                XmlTextWriter textWriter = new XmlTextWriter(Stream, Encoding.UTF8);//定义输出的编码格式
+               
                 //序列化对象
-                xml.Serialize(Stream, obj, ns);
+                xml.Serialize(textWriter, obj, ns);
             }
             catch (InvalidOperationException)
             {

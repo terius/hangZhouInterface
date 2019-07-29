@@ -4,6 +4,7 @@ using Model;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace WindowsFormsApplication1
 {
@@ -66,6 +67,44 @@ namespace WindowsFormsApplication1
 
             //info.version = "1.0.0.1";
             //string x = XmlHelper.Serializer(info);
+            var file = @"E:\20180816\20180816135000912_wb180808008.txt";
+            NEWXMLInfo info = new NEWXMLInfo();
+            info.version = "2.0.0";
+            info.head = new head();
+            info.head.businessType = "CBEE_INFO";
+            info.head.createTime = "2018/8/16 13:50:00";
+            info.head.status = 1;
+            info.head.errMsg = "";
+            info.body = new body();
+            info.body.ENTRYBILL_HEAD = new ENTRYBILL_HEAD();
+            info.body.ENTRYBILL_HEAD.EMS_NO = "";
+            info.body.ENTRYBILL_HEAD.ORDER_NO = "wb180808008";
+            info.body.ENTRYBILL_HEAD.EBC_CODE = "3318961D6D";
+            info.body.ENTRYBILL_HEAD.EBC_NAME = "义乌融易通供应链管理有限公司";
+            info.body.ENTRYBILL_HEAD.LOGISTICS_NO = "wb180808008";
+            info.body.ENTRYBILL_HEAD.LOGISTICS_CODE = "330198Z018";
+            info.body.ENTRYBILL_HEAD.LOGISTICS_NAME = "中外运空运发展股份有限公司浙江分公司";
+            info.body.ENTRYBILL_HEAD.INVT_NO = "29162018E000000122";
+            info.body.ENTRYBILL_HEAD.I_E_FLAG = "E";
+            info.body.ENTRYBILL_HEAD.I_E_DATE = "2017/02/07 00:00:00";
+            info.body.ENTRYBILL_HEAD.AGENT_CODE = "3318961D6D";
+            info.body.ENTRYBILL_HEAD.AGENT_NAME = "义乌融易通供应链管理有限公司";
+            info.body.ENTRYBILL_HEAD.AREA_CODE = "";
+            info.body.ENTRYBILL_HEAD.AREA_NAME = "";
+            info.body.ENTRYBILL_HEAD.TRADE_MODE = "9610";
+            info.body.ENTRYBILL_HEAD.BILL_NO = "20180706004";
+            info.body.ENTRYBILL_HEAD.COUNTRY = "西班牙";
+            info.body.ENTRYBILL_HEAD.PACK_NO = null;
+            info.body.ENTRYBILL_HEAD.GROSS_WEIGHT = 2;
+            info.body.ENTRYBILL_HEAD.DISTRICT_CUSTOMS = "2900";
+
+            var xml = XmlHelper.Serializer(info);
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(file);
+            var asdasd = XmlHelper.Deserialize<NEWXMLInfo>(doc.OuterXml);
+
+            var xmlInfo = XmlHelper.DeserializeFromFile<NEWXMLInfo>(@"E:\20180816\20180816135432088_od180808009.txt");
 
         }
 

@@ -141,7 +141,7 @@ namespace Model
         /// <summary>
         /// 件数
         /// </summary>
-        public int PACK_NO { get; set; }
+        public string PACK_NO { get; set; }
 
 
         /// <summary>
@@ -206,10 +206,18 @@ namespace Model
         [StringLength(2000)]
         public string ITEM_NAME { get; set; }
 
+
+        public string H_S_CODE { get; set; }
+
+        public string G_NAME { get; set; }
+
+        public string G_MODEL { get; set; }
+
+
         /// <summary>
         /// 目的国（地区）代码
         /// </summary>
-        [StringLength(2000)]
+        [StringLength(20)]
         public string COUNTRY { get; set; }
 
         /// <summary>

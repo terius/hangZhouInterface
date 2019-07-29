@@ -119,7 +119,11 @@ namespace DAL
             sqlparams.Add(new SqlParameter("@SEND_NAME", head.AGENT_NAME));
             // sqlparams.Add(new SqlParameter("@TRAF_NAME", drHead["TRAF_NAME"]));
             //  sqlparams.Add(new SqlParameter("@SHIP_ID", drHead["VOYAGE_NO"]));
-            sqlparams.Add(new SqlParameter("@PACK_NO", head.PACK_NO));
+            if (!string.IsNullOrWhiteSpace(head.PACK_NO))
+            {
+                sqlparams.Add(new SqlParameter("@PACK_NO", head.PACK_NO));
+            }
+           
             sqlparams.Add(new SqlParameter("@GROSS_WT", head.GROSS_WEIGHT));
             sqlparams.Add(new SqlParameter("@TOTAL_VALUE", list.TOTAL_PRICE));
             // sqlparams.Add(new SqlParameter("@NOTE", drHead["NOTE_S"]));
