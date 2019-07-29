@@ -186,7 +186,7 @@ namespace HangZhouTran
                         }
                         else
                         {
-                            if (HasValue(eData))
+                            if (eData != null)
                             {
                                 AppendTextWithTime("获取到接口数据");
 
@@ -198,7 +198,7 @@ namespace HangZhouTran
                                 //}
                                 //else
                                 //{
-                                CheckEXAMFlag(eData);
+                             //   CheckEXAMFlag(eData);
                                 rs = da.UpdateHead_OutPut(eData);
                                 AppendTextWithTime("更新出口数据 " + bill_no + (rs > 0 ? " 成功" : " 失败"));
                                 //  }
@@ -236,37 +236,37 @@ namespace HangZhouTran
             }
         }
 
-        private void CheckEXAMFlag(XMLInfo data)
-        {
-            var examFlag = data.body.ENTRYBILL_HEAD.EXAM_FLAG.ToLower() == "true" ? true : false;
-            var rskFlag = data.body.ENTRYBILL_HEAD.RSK_FLAG.ToLower() == "true" ? true : false;
-            if (!examFlag)
-            {
-                data.body.ENTRYBILL_HEAD.R_FLAG = true;
-                data.body.ENTRYBILL_HEAD.GJ_FLAG = false;
-                data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
-                data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
-                data.body.ENTRYBILL_HEAD.Op_type = "01";
+        //private void CheckEXAMFlag(XMLInfo data)
+        //{
+        //    var examFlag = data.body.ENTRYBILL_HEAD.EXAM_FLAG.ToLower() == "true" ? true : false;
+        //    var rskFlag = data.body.ENTRYBILL_HEAD.RSK_FLAG.ToLower() == "true" ? true : false;
+        //    if (!examFlag)
+        //    {
+        //        data.body.ENTRYBILL_HEAD.R_FLAG = true;
+        //        data.body.ENTRYBILL_HEAD.GJ_FLAG = false;
+        //        data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
+        //        data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
+        //        data.body.ENTRYBILL_HEAD.Op_type = "01";
 
-            }
-            else if (!rskFlag)
-            {
-                data.body.ENTRYBILL_HEAD.R_FLAG = false;
-                data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
-                data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
-                data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
-                data.body.ENTRYBILL_HEAD.Op_type = "02";
-            }
-            else
-            {
-                data.body.ENTRYBILL_HEAD.R_FLAG = false;
-                data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
-                data.body.ENTRYBILL_HEAD.RSK_FLAG = "True";
-                data.body.ENTRYBILL_HEAD.Send_FLAG = "1";
-                data.body.ENTRYBILL_HEAD.Op_type = "03";
+        //    }
+        //    else if (!rskFlag)
+        //    {
+        //        data.body.ENTRYBILL_HEAD.R_FLAG = false;
+        //        data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
+        //        data.body.ENTRYBILL_HEAD.RSK_FLAG = "False";
+        //        data.body.ENTRYBILL_HEAD.Send_FLAG = "0";
+        //        data.body.ENTRYBILL_HEAD.Op_type = "02";
+        //    }
+        //    else
+        //    {
+        //        data.body.ENTRYBILL_HEAD.R_FLAG = false;
+        //        data.body.ENTRYBILL_HEAD.GJ_FLAG = true;
+        //        data.body.ENTRYBILL_HEAD.RSK_FLAG = "True";
+        //        data.body.ENTRYBILL_HEAD.Send_FLAG = "1";
+        //        data.body.ENTRYBILL_HEAD.Op_type = "03";
 
-            }
-        }
+        //    }
+        //}
 
         private void PutData(string bill_no, string oper, string opType, DateTime dt)
         {
@@ -279,10 +279,10 @@ namespace HangZhouTran
             return eData != null && eData.Tables.Count > 0 && eData.Tables[0].Rows.Count > 0;
         }
 
-        private bool HasValue(XMLInfo eData)
-        {
-            return eData.head.status == 1;
-        }
+        //private bool HasValue(XMLInfo eData)
+        //{
+        //    return eData.head.status == 1;
+        //}
 
         private bool HasValue(DataTable eData)
         {
