@@ -3,6 +3,7 @@ using DAL;
 using Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
@@ -70,6 +71,7 @@ namespace WindowsFormsApplication1
 
             //info.version = "1.0.0.1";
             //string x = XmlHelper.Serializer(info);
+           // var str = File.ReadAllText(@"E:\20180816\1.txt");
             Dictionary<string, string> xmlItems = new Dictionary<string, string>();
             try
             {
@@ -80,7 +82,7 @@ namespace WindowsFormsApplication1
                 XmlDocument doc = new XmlDocument();
                 doc.Load(filePath);
                 var list = doc.GetElementsByTagName("CBEE_ELIST");
-            
+
                 foreach (XmlNode item in list)
                 {
                     var child = item.ChildNodes;
@@ -105,7 +107,7 @@ namespace WindowsFormsApplication1
                         {
                             xmlItems.Add(item2.Name, item2.InnerText);
                         }
-                       
+
                     }
                 }
 

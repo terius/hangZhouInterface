@@ -279,5 +279,9 @@ namespace Model
     }
 
 
-  
+    public class ColumnMap
+    {
+        public string Table { get; set; }
+        public string XML { get; set; }
+    }
 }
