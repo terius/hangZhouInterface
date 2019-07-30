@@ -4,6 +4,7 @@ using Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
@@ -37,7 +38,7 @@ namespace WindowsFormsApplication1
             var xx = XmlHelper.DeserializeFromFile<NEWXMLInfo>(@"C:\Users\teriushome\Desktop\新建文件夹\新1.txt");
         }
 
-
+        IList<ColumnMap> map;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -71,24 +72,62 @@ namespace WindowsFormsApplication1
 
             //info.version = "1.0.0.1";
             //string x = XmlHelper.Serializer(info);
-           // var str = File.ReadAllText(@"E:\20180816\1.txt");
+            GetColumnMap();
             Dictionary<string, string> xmlItems = new Dictionary<string, string>();
             try
             {
-
-
-                string filePath = @"E:\20180816\20180816135432088_od180808009.txt";
+                string filePath = "1.txt";
 
                 XmlDocument doc = new XmlDocument();
                 doc.Load(filePath);
-                var list = doc.GetElementsByTagName("CBEE_ELIST");
 
+                var status = doc.GetElementsByTagName("status").Item(0).InnerText;
+                xmlItems.Add("status", status);
+
+                var errMsg = doc.GetElementsByTagName("errMsg").Item(0).InnerText;
+                xmlItems.Add("errMsg", errMsg);
+
+                var list = doc.GetElementsByTagName("CBEE_ELIST");
+                string val = "";
                 foreach (XmlNode item in list)
                 {
                     var child = item.ChildNodes;
                     foreach (XmlNode item2 in child)
                     {
-                        xmlItems.Add(item2.Name, item2.InnerText);
+                        if (item2.Name.Equals("INSPECTION_STATUS", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            val = item2.InnerText;
+                            if (item2.InnerText == "放行" || item2.InnerText == "审核通过")
+                            {
+                                val = "0";
+                            }
+                            else if (item2.InnerText == "查验")
+                            {
+                                val = "1";
+                            }
+                            xmlItems.Add(item2.Name, val);
+                        }
+                        else if (item2.Name.Equals("PACK_NO", StringComparison.CurrentCultureIgnoreCase)
+                            || item2.Name.Equals("GROSS_WEIGHT", StringComparison.CurrentCultureIgnoreCase)
+                            )
+                        {
+                            val = item2.InnerText;
+                            double itemp = 0;
+                            if (double.TryParse(val, out itemp))
+                            {
+                                xmlItems.Add(item2.Name, val);
+                            }
+                            else
+                            {
+                                xmlItems.Add(item2.Name, null);
+                            }
+
+
+                        }
+                        else
+                        {
+                            xmlItems.Add(item2.Name, item2.InnerText);
+                        }
                     }
                 }
 
@@ -111,13 +150,20 @@ namespace WindowsFormsApplication1
                     }
                 }
 
-                var sss = xmlItems["G_NAME"];
+
+             
+
+
             }
             catch (Exception ex)
             {
 
                 throw;
             }
+
+            DataAction da = new DataAction();
+            var rs = da.UpdateTmp(map, xmlItems);
+            MessageBox.Show(rs.ToString());
             //   var xmlInfo = XmlHelper.DeserializeFromFile<NEWXMLInfo>(filePath);
 
 
@@ -157,6 +203,28 @@ namespace WindowsFormsApplication1
 
 
 
+
+        }
+
+        public void GetColumnMap()
+        {
+            List<string> lines = File.ReadLines("table.txt").ToList();
+            if (lines.Count() < 2)
+            {
+                throw new Exception("映射文件错误");
+            }
+         
+            var tables = lines[0].Split(new char[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
+            var xmls = lines[1].Split(new char[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
+            if (tables.Length != xmls.Length)
+            {
+                Loger.LogMessage("字段对应数错误");
+            }
+            map = new List<ColumnMap>();
+            for (int i = 0; i < tables.Length; i++)
+            {
+                map.Add(new ColumnMap { Table = tables[i], XML = xmls[i] });
+            }
 
         }
 
