@@ -1,5 +1,6 @@
 ﻿using Common;
 using DAL;
+using HangZhouTran;
 using Model;
 using System;
 using System.Collections.Generic;
@@ -42,41 +43,11 @@ namespace WindowsFormsApplication1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
-            //XMLInfo info = new XMLInfo();
-            //head head = new head();
-            //head.businessType = "ENTRYBILL_INFO";
-            //head.createTime = "2017/11/22 14:14:03";
-            //head.status = "1";
-            //head.errMsg = "";
-
-            //ENTRYBILL_HEAD h = new ENTRYBILL_HEAD();
-            //h.ENTRY_NO = "QD350166852160019603245";
-            //h.WB_NO = "570670855326";
-
-            //List<ENTRYBILL_LIST> list = new List<ENTRYBILL_LIST>();
-            //for (int i = 0; i < 2; i++)
-            //{
-            //    ENTRYBILL_LIST l = new ENTRYBILL_LIST();
-            //    l.ENTRY_NO = "QD350166852160019603245";
-            //    l.PASS_NO = "QD350166852160019603245";
-            //    list.Add(l);
-            //}
-
-
-            //body body = new body();
-            //body.ENTRYBILL_HEAD = h;
-            //body.ENTRYBILL_LIST = list;
-            //info.head = head;
-            //info.body = body;
-
-            //info.version = "1.0.0.1";
-            //string x = XmlHelper.Serializer(info);
             GetColumnMap();
             Dictionary<string, string> xmlItems = new Dictionary<string, string>();
             try
             {
-                string filePath = "1.txt";
+                string filePath = "4.txt";
 
                 XmlDocument doc = new XmlDocument();
                 doc.Load(filePath);
@@ -228,14 +199,14 @@ namespace WindowsFormsApplication1
 
         }
 
-        private async void textBox1_KeyDown(object sender, KeyEventArgs e)
+        private async  void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
                 var value = this.textBox1.Text.Trim();
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    var res = await client.GetInfoAsync(value, "");
+                    var res =await  client.GetInfoAsync(value, "");
                     AddMessage(res.Body.GetInfoResult);
                 }
             }
@@ -244,6 +215,12 @@ namespace WindowsFormsApplication1
         private void AddMessage(string text)
         {
             this.txtContent.AppendText(text + "\r\n\r\n");
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            HZAction ac = new HZAction();
+            ac.BeginRun();
         }
     }
 }

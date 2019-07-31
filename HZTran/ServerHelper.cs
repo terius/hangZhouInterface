@@ -3,6 +3,7 @@ using Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace HangZhouTran
@@ -12,50 +13,22 @@ namespace HangZhouTran
         static ServiceReference1.yServiceSoapClient client = new ServiceReference1.yServiceSoapClient();
         static readonly string appNo = System.Configuration.ConfigurationManager.AppSettings["APPNO"];
         static readonly int SaveResData = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveResData"]);
-        public static NEWXMLInfo GetOutputData(string wbNo)
-        {
 
-            //var file = XmlHelper.DeserializeFromFile<XMLInfo>("d:\\222.txt");
-            //return file;
-            NEWXMLInfo info = null;
-            try
-            {
-                var data = client.GetInfo(wbNo, appNo);
-                if (SaveResData == 1)
-                {
-                    var path = CreateFilePath("responseFiles");
-                    var xmlFile = Path.Combine(path, DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt");
-                    XmlHelper.SaveToFile(data, xmlFile);
-                }
-                if (data.Contains("<errMsg>没有查询结果</errMsg>"))
-                {
-                    return null;
-                }
-                info = XmlHelper.Deserialize<NEWXMLInfo>(data);
-            }
-            catch (Exception ex)
-            {
-                Loger.LogMessage("GetOutputData失败：" + ex.ToString());
-            }
-
-            return info;
-        }
         public static Dictionary<string, string> GetOutputData2(string wbNo)
         {
             Dictionary<string, string> xmlItems = null;
             try
             {
+
                 var data = client.GetInfo(wbNo, appNo);
+                //   var data = data1.Body.GetInfoResult;
                 if (SaveResData == 1)
                 {
                     var path = CreateFilePath("responseFiles");
                     var xmlFile = Path.Combine(path, DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt");
                     XmlHelper.SaveToFile(data, xmlFile);
                 }
-                if (data.Contains("<errMsg>没有查询结果</errMsg>"))
-                {
-                    return null;
-                }
+               
                 xmlItems = GetXML(data);
             }
             catch (Exception ex)
@@ -104,7 +77,7 @@ namespace HangZhouTran
                     {
                         val = item2.InnerText;
                         double itemp = 0;
-                        if (double.TryParse(val,out itemp))
+                        if (double.TryParse(val, out itemp))
                         {
                             xmlItems.Add(item2.Name, val);
                         }
@@ -112,8 +85,8 @@ namespace HangZhouTran
                         {
                             xmlItems.Add(item2.Name, null);
                         }
-                       
-                       
+
+
                     }
                     else
                     {

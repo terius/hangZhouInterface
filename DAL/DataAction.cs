@@ -11,7 +11,7 @@ namespace DAL
     public class DataAction
     {
         private readonly string TableName = System.Configuration.ConfigurationManager.AppSettings["TableName"];
-        private string GetHeadSQL = "select  bill_no from {0} where read_flag1 = '0'";
+        private string GetHeadSQL = "select  bill_no from {0} where send_flag1 = '0'";
         private string GetNoSendSQL = "select  bill_no from {0} where send_flag2 = '0'";
         private string updateSQL;
         public DataAction()
@@ -39,14 +39,14 @@ namespace DAL
         public int UpdateTmp(IList<ColumnMap> list, Dictionary<string, string> xmlItems)
         {
             IList<SqlParameter> sqlparams = new List<SqlParameter>();
-            // int i = 0;
+             int i = 0;
             foreach (var item in list)
             {
-                //  i++;
-                //   if (i < 100)
-                //  {
-                sqlparams.Add(new SqlParameter("@" + item.Table, xmlItems[item.XML]));
-                // }
+                i++;
+                if (i < 130)
+                {
+                    sqlparams.Add(new SqlParameter("@" + item.Table, xmlItems[item.XML]));
+                }
             }
             if (string.IsNullOrEmpty(updateSQL))
             {

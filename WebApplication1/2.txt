@@ -1,0 +1,11 @@
+﻿<?xml version = "1.0" encoding="UTF-8" ?>
+<mo version = "1.0.0" >
+<head>
+<businessType>CBEE _INFO</businessType>
+<createTime>2018/07/13 9:23:37</createTime>
+<status>0</status>
+<errMsg>包裹异常，请通知现场海关处理</errMsg>
+</head>
+<body>
+</body>
+</mo>

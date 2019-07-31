@@ -34,10 +34,10 @@ namespace Common
                     fs1.Close();
                     Thread.Sleep(10);
                 }
-
+               
                 using (StreamWriter sw = new StreamWriter(path, true, Encoding.Default))
                 {
-                    sw.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " --- " + msg);
+                    sw.WriteLine(msg);
                     sw.Flush();
                     sw.Close();
                 }

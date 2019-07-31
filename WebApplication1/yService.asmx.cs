@@ -124,17 +124,8 @@ namespace WebApplication1
         [WebMethod]
         public String SetExam(String logistics_No, String app_No, int checkWay, int checkResult, int inspectionStatus, string result)
         {
-            //XMLInfo_OLD info = new XMLInfo_OLD();
-            //head_old head = new head_old();
-            //head.businessType = "ENTRYBILL_INFO";
-            //head.createTime = "2017/11/22 14:14:03";
-            //head.status = 1;
-            //head.errMsg = "";
-            //info.head = head;
-            //info.version = "1.0.0.1";
-            //string x = XmlHelper.Serializer(info);
-            //return x;
-            return "";
+            var str = XmlHelper.ReadXMLToString(Path.Combine(filePath, "2.txt"));
+            return str;
         }
     }
 

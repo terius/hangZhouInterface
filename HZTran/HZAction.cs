@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace HangZhouTran
 {
@@ -17,7 +18,7 @@ namespace HangZhouTran
         private volatile bool isRun = false;
         private readonly int LoopTime1 = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LoopTime1"]);
         private readonly int LoopTime2 = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LoopTime1"]);
-        private StringBuilder sbLog;
+        //  private StringBuilder sbLog;
         IList<ColumnMap> map;
         public void BeginRun()
         {
@@ -26,7 +27,7 @@ namespace HangZhouTran
 
 
                 FileHelper.WriteLog("服务已启动");
-                sbLog = new StringBuilder();
+                // sbLog = new StringBuilder();
                 isRun = true;
                 CheckDirectory();
                 GetColumnMap();
@@ -94,10 +95,10 @@ namespace HangZhouTran
                 {
                     while (isRun)
                     {
-                        sbLog.Clear();
+                        // sbLog.Clear();
                         //FileHelper.WriteLog("开始读取数据");
                         UpdateHead();
-                        FileHelper.WriteLog(sbLog.ToString());
+                        // FileHelper.WriteLog(sbLog.ToString());
                         Thread.Sleep(LoopTime1);
                     }
                 }
@@ -151,74 +152,76 @@ namespace HangZhouTran
         }
 
 
-        private DateTime SaveGetDateTime(object oDateTime, string defaultTime = null)
-        {
-            DateTime t = DateTime.Now;
-            if (oDateTime != null && oDateTime.ToString() != "")
-            {
-                bool rs = DateTime.TryParse(oDateTime.ToString(), out t);
-                if (!rs)
-                {
-                    if (!string.IsNullOrEmpty(defaultTime))
-                    {
-                        t = Convert.ToDateTime(defaultTime);
-                    }
-                }
-            }
-            return t;
-        }
+
 
 
         readonly int _saveLog = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveLog"]);
-        private void AppendTextWithTime(string msg)
+        private string AppendTextWithTime(string msg)
         {
             if (_saveLog != 1)
             {
-                return;
+                return "";
             }
-            sbLog.AppendFormat("{0}----{1}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), msg);
+            return string.Format("{0}----{1}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), msg);
         }
 
         private void UpdateHead()
         {
-
-
             try
             {
+                string msg = "";
                 var ReadData = da.GetScanData();
                 if (ReadData != null && ReadData.Rows.Count > 0)
                 {
                     // ServerHelper server = new ServerHelper();
-                    string bill_no;
-                    DateTime opTime = DateTime.Now;
+                    string bill_no="";
                     int rs = 0;
                     foreach (DataRow dr in ReadData.Rows)
                     {
-                        bill_no = dr["bill_no"].ToString();
-                        AppendTextWithTime("数据库获取到分运单号：" + bill_no);
-                        var eData = ServerHelper.GetOutputData2(bill_no);
-                        if (eData == null)
+                        try
                         {
-                            AppendTextWithTime("远程数据获取失败");
-                            continue;
-                        }
-                        if (eData["status"] == "0")
-                        {
-                            var errmsg = eData["errMsg"];
-                            AppendTextWithTime("调用不成功status=0,错误信息：" + errmsg);
-                            da.UpdateFailInfoToTMP(bill_no, errmsg);
-                        }
-                        else
-                        {
-                            AppendTextWithTime("获取到接口数据");
-                            rs = da.UpdateTmp(map, eData);
-                            AppendTextWithTime("更新出口数据 " + bill_no + (rs > 0 ? " 成功" : " 失败"));
+                            bill_no = dr["bill_no"].ToString();
+                            msg += AppendTextWithTime("查询到send_flag1=0的分运单号：" + bill_no);
+                            msg += AppendTextWithTime("开始执行webservice");
+                            var eData = ServerHelper.GetOutputData2(bill_no);
+                            msg += AppendTextWithTime("执行webservice结束");
+                            if (eData == null)
+                            {
+                                msg += AppendTextWithTime("WebService:GetInfo  fail");
+                                continue;
+                            }
 
-                        }
+                            if (eData["status"] == "0")
+                            {
+                                var errmsg = eData["errMsg"];
+                                msg += AppendTextWithTime("response data status=0,errmsg：" + errmsg);
+                                da.UpdateFailInfoToTMP(bill_no, errmsg);
+                            }
+                            else
+                            {
+                                msg += AppendTextWithTime("response data status=1");
+                                rs = da.UpdateTmp(map, eData);
+                                msg += AppendTextWithTime("update table " + bill_no + (rs > 0 ? " 成功" : " 失败"));
 
-                        sbLog.AppendLine("-------------------------------------------------------------\r\n");
-                        //   Thread.Sleep(200);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Loger.LogMessage(ex);
+                            da.UpdateFailInfoToTMP(bill_no, "执行错误，错误信息："+ ex.Message);
+                            msg += AppendTextWithTime(ex.Message);
+                        }
+                      
+
+
                     }
+                    if (msg != "")
+                    {
+                        FileHelper.WriteLog(msg);
+                    }
+
+
+
                 }
             }
             catch (Exception ex)
