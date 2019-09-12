@@ -8,18 +8,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace HangZhouTran
 {
     public class HZAction
     {
         DataAction da = new DataAction();
-        private volatile bool isRun = false;
-        private readonly int LoopTime1 = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LoopTime1"]);
-        private readonly int LoopTime2 = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LoopTime1"]);
-        //  private StringBuilder sbLog;
+        volatile bool isRun = false;
         IList<ColumnMap> map;
+        readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
+        StringBuilder sbLog = new StringBuilder();
         public void BeginRun()
         {
             try
@@ -47,7 +45,7 @@ namespace HangZhouTran
                 Loger.LogMessage("服务报错：" + ex.ToString());
             }
         }
-        readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
+
         private void GetColumnMap()
         {
 
@@ -84,6 +82,12 @@ namespace HangZhouTran
             {
                 Directory.CreateDirectory(path);
             }
+
+            path = AppDomain.CurrentDomain.BaseDirectory + "BadFiles";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
 
         object obRun = new object();
@@ -99,7 +103,7 @@ namespace HangZhouTran
                         //FileHelper.WriteLog("开始读取数据");
                         UpdateHead();
                         // FileHelper.WriteLog(sbLog.ToString());
-                        Thread.Sleep(LoopTime1);
+                        Thread.Sleep(AppConfig.LoopTime1);
                     }
                 }
 
@@ -121,7 +125,7 @@ namespace HangZhouTran
                     while (isRun)
                     {
                         UpdateSendData();
-                        Thread.Sleep(LoopTime2);
+                        Thread.Sleep(AppConfig.LoopTime2);
                     }
                 }
 
@@ -153,71 +157,65 @@ namespace HangZhouTran
 
 
 
-
-
-        readonly int _saveLog = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveLog"]);
-        private string AppendTextWithTime(string msg)
-        {
-            if (_saveLog != 1)
-            {
-                return "";
-            }
-            return string.Format("{0}----{1}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), msg);
-        }
-
         private void UpdateHead()
         {
             try
             {
-                string msg = "";
                 var ReadData = da.GetScanData();
                 if (ReadData != null && ReadData.Rows.Count > 0)
                 {
-                    // ServerHelper server = new ServerHelper();
-                    string bill_no="";
+                    var getInfoStatus = "";
+                    string bill_no = "";
                     int rs = 0;
+                    sbLog.Clear();
+                    string xmlData = "";
+                    string flag = "";
                     foreach (DataRow dr in ReadData.Rows)
                     {
                         try
                         {
                             bill_no = dr["bill_no"].ToString();
-                            msg += AppendTextWithTime("查询到send_flag1=0的分运单号：" + bill_no);
-                            msg += AppendTextWithTime("开始执行webservice");
-                            var eData = ServerHelper.GetOutputData2(bill_no);
-                            msg += AppendTextWithTime("执行webservice结束");
+                            var eData = ServerHelper.GetOutputData2(bill_no, ref xmlData);
                             if (eData == null)
                             {
-                                msg += AppendTextWithTime("WebService:GetInfo  fail");
-                                continue;
-                            }
-
-                            if (eData["status"] == "0")
-                            {
-                                var errmsg = eData["errMsg"];
-                                msg += AppendTextWithTime("response data status=0,errmsg：" + errmsg);
-                                da.UpdateFailInfoToTMP(bill_no, errmsg);
+                                flag = "4";
+                                da.UpdateSendFlag1(bill_no, flag, "电子口岸无反馈");
                             }
                             else
                             {
-                                msg += AppendTextWithTime("response data status=1");
-                                rs = da.UpdateTmp(map, eData);
-                                msg += AppendTextWithTime("update table " + bill_no + (rs > 0 ? " 成功" : " 失败"));
-
+                                if (eData["status"] == "0")
+                                {
+                                    var errmsg = eData["errMsg"];
+                                    flag = "2";
+                                    da.UpdateSendFlag1(bill_no, flag, errmsg);
+                                }
+                                else
+                                {
+                                    flag = "1";
+                                    rs = da.UpdateTmp(map, eData);
+                                    if (rs < 1)
+                                    {
+                                        flag = "3";
+                                        da.UpdateSendFlag1(bill_no, flag, "数据异常无法写入");
+                                        SaveToBadPath(bill_no, xmlData);
+                                    }
+                                }
                             }
+                            getInfoStatus = eData == null ? "fail" : "ok";
+                            sbLog.AppendLine($"bill_no:{bill_no},getInfo:{getInfoStatus},status:{eData["status"]},set send_flag1={flag}");
                         }
                         catch (Exception ex)
                         {
-                            Loger.LogMessage(ex);
-                            da.UpdateFailInfoToTMP(bill_no, "执行错误，错误信息："+ ex.Message);
-                            msg += AppendTextWithTime(ex.Message);
+                            Loger.LogMessage("读取出错：" + ex.ToString());
+                            da.UpdateSendFlag1(bill_no, "3", "执行错误，错误信息：" + ex.Message);
+                            SaveToBadPath(bill_no, xmlData);
+                            sbLog.AppendLine(ex.Message);
                         }
-                      
-
 
                     }
-                    if (msg != "")
+                    if (sbLog.Length > 0)
                     {
-                        FileHelper.WriteLog(msg);
+                        FileHelper.WriteLog(sbLog.ToString());
                     }
 
 
@@ -227,6 +225,16 @@ namespace HangZhouTran
             catch (Exception ex)
             {
                 Loger.LogMessage(ex);
+            }
+        }
+
+        private void SaveToBadPath(string bill_no, string data)
+        {
+            if (AppConfig.SaveResData == 1)
+            {
+                var path = FileHelper.CreatePathWithDate("BadFiles");
+                var xmlFile = Path.Combine(path, DateTime.Now.ToString("yyyyMMddHHmmssfff_") + bill_no + ".txt");
+                FileHelper.SaveToFile(data, xmlFile);
             }
         }
 
@@ -242,27 +250,12 @@ namespace HangZhouTran
             if (rs["status"] == "0")
             {
                 var errmsg = rs["errMsg"];
-                da.UpdateSendFailInfoToTMP(bill_no, errmsg);
+                da.UpdateSendFlag2(bill_no, "2", errmsg);
             }
             else
             {
-                da.UpdateSendSuccessInfoToTMP(bill_no);
+                da.UpdateSendFlag2(bill_no, "1", "回写成功");
             }
-        }
-
-        private bool HasValue(DataSet eData)
-        {
-            return eData != null && eData.Tables.Count > 0 && eData.Tables[0].Rows.Count > 0;
-        }
-
-        //private bool HasValue(XMLInfo eData)
-        //{
-        //    return eData.head.status == 1;
-        //}
-
-        private bool HasValue(DataTable eData)
-        {
-            return eData != null && eData.Rows.Count > 0;
         }
 
 

@@ -11,28 +11,30 @@ namespace HangZhouTran
     public class ServerHelper
     {
         static ServiceReference1.yServiceSoapClient client = new ServiceReference1.yServiceSoapClient();
-        static readonly string appNo = System.Configuration.ConfigurationManager.AppSettings["APPNO"];
-        static readonly int SaveResData = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveResData"]);
+      //  static readonly string appNo = System.Configuration.ConfigurationManager.AppSettings["APPNO"];
+      //  static readonly int SaveResData = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveResData"]);
 
-        public static Dictionary<string, string> GetOutputData2(string wbNo)
+        public static Dictionary<string, string> GetOutputData2(string wbNo,ref string infoData)
         {
             Dictionary<string, string> xmlItems = null;
             try
             {
 
-                var data = client.GetInfo(wbNo, appNo);
+                var data = client.GetInfo(wbNo, AppConfig.AppNo);
+                infoData = data;
                 //   var data = data1.Body.GetInfoResult;
-                if (SaveResData == 1)
+                if (AppConfig.SaveResData == 1)
                 {
-                    var path = CreateFilePath("responseFiles");
+                    var path = FileHelper.CreatePathWithDate("responseFiles");
                     var xmlFile = Path.Combine(path, DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt");
-                    XmlHelper.SaveToFile(data, xmlFile);
+                    FileHelper.SaveToFile(data, xmlFile);
                 }
-               
+
                 xmlItems = GetXML(data);
             }
             catch (Exception ex)
             {
+                xmlItems = null;
                 Loger.LogMessage("GetOutputData2失败：" + ex.ToString());
             }
 
@@ -137,12 +139,12 @@ namespace HangZhouTran
             Dictionary<string, string> items = null;
             try
             {
-                var data = client.SetExam(wbNo, appNo, 1, 1, 23, "");
-                if (SaveResData == 1)
+                var data = client.SetExam(wbNo, AppConfig.AppNo, 1, 1, 23, "");
+                if (AppConfig.SaveResData == 1)
                 {
-                    var path = CreateFilePath("putResponseFiles");
+                    var path = FileHelper.CreatePathWithDate("putResponseFiles");
                     var xmlFile = Path.Combine(path, DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt");
-                    XmlHelper.SaveToFile(data, xmlFile);
+                    FileHelper.SaveToFile(data, xmlFile);
                 }
                 items = GetSendXML(data);
             }
@@ -155,15 +157,6 @@ namespace HangZhouTran
 
         }
 
-        private static string CreateFilePath(string pathName)
-        {
 
-            var path = AppDomain.CurrentDomain.BaseDirectory + pathName + "\\" + DateTime.Now.ToString("yyyyMMdd");
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            return path;
-        }
     }
 }

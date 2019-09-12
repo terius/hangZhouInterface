@@ -1,26 +1,26 @@
-﻿using Model;
+﻿using Common;
+using Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Text;
 
 namespace DAL
 {
     public class DataAction
     {
-        private readonly string TableName = System.Configuration.ConfigurationManager.AppSettings["TableName"];
+        private string TableName;
         private string GetHeadSQL = "select  bill_no from {0} where send_flag1 = '0'";
         private string GetNoSendSQL = "select  bill_no from {0} where send_flag2 = '0'";
         private string updateSQL;
         public DataAction()
         {
+            TableName = AppConfig.TableName;
             GetHeadSQL = string.Format(GetHeadSQL, TableName);
             GetNoSendSQL = string.Format(GetNoSendSQL, TableName);
-            UpdateFailInfoToTMP_SQL= string.Format(UpdateFailInfoToTMP_SQL, TableName);
-            UpdateSendFailInfoToTMP_SQL= string.Format(UpdateSendFailInfoToTMP_SQL, TableName);
-            UpdateSendSuccessInfoToTMP_SQL = string.Format(UpdateSendSuccessInfoToTMP_SQL, TableName);
+            UpdateSendFlag1Sql = string.Format(UpdateSendFlag1Sql, TableName);
+            UpdateSendFlag2Sql = string.Format(UpdateSendFlag2Sql, TableName);
         }
 
         public DataTable GetScanData()
@@ -34,28 +34,61 @@ namespace DAL
             return DbHelperSQL.Query(GetNoSendSQL).Tables[0];
         }
 
-        
+
 
         public int UpdateTmp(IList<ColumnMap> list, Dictionary<string, string> xmlItems)
         {
-            IList<SqlParameter> sqlparams = new List<SqlParameter>();
-             int i = 0;
-            foreach (var item in list)
+            int rs = 0;
+            try
             {
-                i++;
-                if (i < 130)
+                IList<SqlParameter> sqlparams = new List<SqlParameter>();
+
+                foreach (var item in list)
                 {
                     sqlparams.Add(new SqlParameter("@" + item.Table, xmlItems[item.XML]));
                 }
+                if (string.IsNullOrEmpty(updateSQL))
+                {
+                    updateSQL = CreateUpdateSql(sqlparams, "send_flag1=1,send_time1=getdate(),errmsg1='数据正常'");
+                }
+                rs = DbHelperSQL.ExecuteSql(updateSQL, sqlparams);
             }
-            if (string.IsNullOrEmpty(updateSQL))
+            catch (Exception ex)
             {
-                updateSQL = CreateUpdateSql(sqlparams, "send_flag1=1,send_time1=getdate()");
+                string listString = GetListString(xmlItems);
+                Loger.LogMessage("sql:" + updateSQL + "\r\n数据:" + listString + "\r\n错误:" + ex.ToString());
             }
-            return DbHelperSQL.ExecuteSql(updateSQL, sqlparams);
+
+            return rs;
+
         }
 
-        private string CreateUpdateSql(IList<SqlParameter> sqlparams, string otherUpdateSql= null)
+        private string GetListString(Dictionary<string, string> myDict)
+        {
+            if (myDict == null || myDict.Count < 1)
+            {
+                return "";
+            }
+            var myStringBuilder = new StringBuilder();
+            bool first = true;
+            foreach (KeyValuePair<string, string> pair in myDict)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    myStringBuilder.Append(";");
+                }
+
+                myStringBuilder.AppendFormat("{0}={1}", pair.Key, pair.Value);
+            }
+
+            return myStringBuilder.ToString();
+        }
+
+        private string CreateUpdateSql(IList<SqlParameter> sqlparams, string otherUpdateSql = null)
         {
             StringBuilder sb = new StringBuilder("update " + TableName + " set ");
             foreach (var item in sqlparams)
@@ -73,39 +106,32 @@ namespace DAL
             sb.Append(" where BILL_NO=@BILL_NO");
             return sb.ToString();
         }
-        
 
-        string UpdateFailInfoToTMP_SQL = "update {0} set send_flag1=2,send_time1=getdate(),errmsg1=@errmsg1 where BILL_NO=@BILL_NO";
-        public int UpdateFailInfoToTMP(string bill_no, string errmsg)
+
+       
+
+
+        string UpdateSendFlag1Sql = "update {0} set send_flag1=@send_flag1,send_time1=getdate(),errmsg1=@errmsg1 where BILL_NO=@BILL_NO";
+        public int UpdateSendFlag1(string bill_no, string send_flag1, string errmsg)
         {
 
             SqlParameter[] sqlparams = {
+                new SqlParameter("@send_flag1",send_flag1),
                 new SqlParameter("@errmsg1",errmsg),
-                 new SqlParameter("@BILL_NO",bill_no)
+                new SqlParameter("@BILL_NO",bill_no)
             };
-            return DbHelperSQL.ExecuteSql(UpdateFailInfoToTMP_SQL, sqlparams);
+            return DbHelperSQL.ExecuteSql(UpdateSendFlag1Sql, sqlparams);
         }
 
-
-        string UpdateSendFailInfoToTMP_SQL = "update {0} set send_flag2=2,send_time2=getdate(),errmsg2=@errmsg2 where BILL_NO=@BILL_NO";
-        public int UpdateSendFailInfoToTMP(string bill_no, string errmsg)
+        string UpdateSendFlag2Sql = "update {0} set send_flag2=@send_flag2,send_time2=getdate(),errmsg2=@errmsg2 where BILL_NO=@BILL_NO";
+        public int UpdateSendFlag2(string bill_no, string send_flag2, string errmsg)
         {
-
             SqlParameter[] sqlparams = {
+                new SqlParameter("@send_flag2",send_flag2),
                 new SqlParameter("@errmsg2",errmsg),
-                 new SqlParameter("@BILL_NO",bill_no)
+                new SqlParameter("@BILL_NO",bill_no)
             };
-            return DbHelperSQL.ExecuteSql(UpdateSendFailInfoToTMP_SQL, sqlparams);
-        }
-
-        string UpdateSendSuccessInfoToTMP_SQL = "update {0} set send_flag2=1,send_time2=getdate() where BILL_NO=@BILL_NO";
-        public int UpdateSendSuccessInfoToTMP(string bill_no)
-        {
-
-            SqlParameter[] sqlparams = {
-                 new SqlParameter("@BILL_NO",bill_no)
-            };
-            return DbHelperSQL.ExecuteSql(UpdateSendSuccessInfoToTMP_SQL, sqlparams);
+            return DbHelperSQL.ExecuteSql(UpdateSendFlag2Sql, sqlparams);
         }
 
 

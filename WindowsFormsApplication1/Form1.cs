@@ -43,6 +43,7 @@ namespace WindowsFormsApplication1
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            return;
             GetColumnMap();
             Dictionary<string, string> xmlItems = new Dictionary<string, string>();
             try

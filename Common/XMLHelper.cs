@@ -39,7 +39,7 @@ namespace Common
             {
                 return default(T);
             }
-          
+
 
 
 
@@ -48,7 +48,7 @@ namespace Common
             //    using (StringReader sr = new StringReader(xml))
             //    {
             //        XmlSerializer xmldes = new XmlSerializer(typeof(T));
-                
+
             //        return (T)xmldes.Deserialize(sr);
             //    }
             //}
@@ -63,7 +63,7 @@ namespace Common
         public static T DeserializeFromFile<T>(string fileName)
         {
             FileStream fs = null;
-            
+
             try
             {
                 fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
@@ -106,9 +106,9 @@ namespace Common
         public static string Serializer<T>(T obj)
         {
             MemoryStream Stream = new MemoryStream();
-        
+
             XmlSerializer xml = new XmlSerializer(typeof(T));
-          
+
             try
             {
                 XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
@@ -116,7 +116,7 @@ namespace Common
                 //Add an empty namespace and empty value
                 ns.Add("", "");
                 XmlTextWriter textWriter = new XmlTextWriter(Stream, Encoding.UTF8);//定义输出的编码格式
-               
+
                 //序列化对象
                 xml.Serialize(textWriter, obj, ns);
             }
@@ -138,7 +138,7 @@ namespace Common
         {
             var xmlString = Serializer<T>(obj);
 
-            SaveToFile(xmlString, fileName);
+            FileHelper.SaveToFile(xmlString, fileName);
 
         }
 
@@ -152,21 +152,7 @@ namespace Common
             ds.WriteXml(fileName);
         }
 
-        public static void SaveToFile(string xmlString, string fileName)
-        {
-            if (!string.IsNullOrEmpty(xmlString))
-            {
-                using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
-                {
-                    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
-                    {
 
-                        sw.Write(xmlString);
-                        sw.Close();
-                    }
-                }
-            }
-        }
 
         public static string ReadXMLToString(string filePath)
         {

@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppConfig.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="Loger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

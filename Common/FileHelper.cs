@@ -7,8 +7,8 @@ namespace Common
 {
     public class FileHelper
     {
-        const int LOCK = 500; //申请读写时间
-        const int SLEEP = 100; //线程挂起时间
+        // const int LOCK = 500; //申请读写时间
+        //  const int SLEEP = 100; //线程挂起时间
         static ReaderWriterLockSlim readWriteLock = new ReaderWriterLockSlim();
         private static readonly int SaveLog = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SaveLog"]);
 
@@ -34,14 +34,14 @@ namespace Common
                     fs1.Close();
                     Thread.Sleep(10);
                 }
-               
+
                 using (StreamWriter sw = new StreamWriter(path, true, Encoding.Default))
                 {
                     sw.WriteLine(msg);
                     sw.Flush();
                     sw.Close();
                 }
-              //  Thread.Sleep(SLEEP);
+                //  Thread.Sleep(SLEEP);
 
             }
             catch (Exception ex)
@@ -51,6 +51,32 @@ namespace Common
             finally
             {
                 readWriteLock.ExitWriteLock();
+            }
+        }
+
+
+        public static string CreatePathWithDate(string pathName)
+        {
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, pathName, DateTime.Now.ToString("yyyyMMdd"));
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
+        }
+
+        public static void SaveToFile(string content, string fileName)
+        {
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+                {
+                    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+                    {
+                        sw.Write(content);
+                        sw.Close();
+                    }
+                }
             }
         }
     }
