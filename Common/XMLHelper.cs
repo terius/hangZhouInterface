@@ -6,6 +6,7 @@ using System.IO;
 using System.Data;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Common
 {
@@ -154,13 +155,23 @@ namespace Common
 
 
 
-        public static string ReadXMLToString(string filePath)
+        public static string FileToXMLString(string filePath)
         {
             XmlDocument doc = new XmlDocument();
-            doc.Load(filePath);
+            var str = File.ReadAllText(filePath);
+            str = Filter(str);
+            doc.LoadXml(str);
             return doc.OuterXml;
         }
 
         #endregion
+
+        public static string Filter(string xmlString)
+        {
+            string result = Regex.Replace(xmlString, @"[\x00-\x08\x0B\x0C\x0E-\x1F]", "");
+            result = result.Replace("&", "");
+            result = result.Replace("'", "");
+            return result;
+        }
     }
 }

@@ -28,9 +28,17 @@ namespace WebApplication1
         {
            // Thread.Sleep(5000);
             string aa = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-            var fileName = Path.Combine(Server.MapPath("/"), "files", "20190909101213343_UD107228197TH.txt");
-            var str = XmlHelper.ReadXMLToString(fileName);
-            return str;
+            var dir = new DirectoryInfo(Path.Combine(Server.MapPath("/"), "files"));
+            foreach (var file in dir.GetFiles())
+            {
+                if (file.Name.Contains(logistics_No))
+                {
+                    var str = XmlHelper.FileToXMLString(file.FullName);
+                    return str;
+                }
+            }
+            return "";
+          
 
         }
 
@@ -47,7 +55,7 @@ namespace WebApplication1
         [WebMethod]
         public String SetExam(String logistics_No, String app_No, int checkWay, int checkResult, int inspectionStatus, string result)
         {
-            var str = XmlHelper.ReadXMLToString(Path.Combine(filePath, "2.txt"));
+            var str = XmlHelper.FileToXMLString(Path.Combine(filePath, "2.txt"));
             return str;
         }
     }

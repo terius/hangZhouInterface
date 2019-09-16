@@ -21,6 +21,7 @@ namespace HangZhouTran
             {
 
                 var data = client.GetInfo(wbNo, AppConfig.AppNo);
+                data = data.Replace("&CO", "");
                 infoData = data;
                 //   var data = data1.Body.GetInfoResult;
                 if (AppConfig.SaveResData == 1)
@@ -41,11 +42,14 @@ namespace HangZhouTran
             return xmlItems;
         }
 
+
+
         private static Dictionary<string, string> GetXML(string xmlStr)
         {
             Dictionary<string, string> xmlItems = new Dictionary<string, string>();
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(xmlStr);
+            var filterStr = XmlHelper.Filter(xmlStr);
+            doc.LoadXml(filterStr);
 
             var status = doc.GetElementsByTagName("status").Item(0).InnerText;
             xmlItems.Add("status", status);
