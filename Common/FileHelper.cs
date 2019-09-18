@@ -79,5 +79,20 @@ namespace Common
                 }
             }
         }
+
+        /// <summary>
+        /// 去除文件名中的非法字符
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ClearInvalidString(string fileName)
+        {
+            foreach (char rInvalidChar in Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(rInvalidChar.ToString(), string.Empty);
+            }
+            return fileName;
+              
+        }
     }
 }

@@ -123,7 +123,7 @@ namespace WindowsFormsApplication1
                 }
 
 
-             
+
 
 
             }
@@ -185,7 +185,7 @@ namespace WindowsFormsApplication1
             {
                 throw new Exception("映射文件错误");
             }
-         
+
             var tables = lines[0].Split(new char[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
             var xmls = lines[1].Split(new char[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
             if (tables.Length != xmls.Length)
@@ -200,14 +200,14 @@ namespace WindowsFormsApplication1
 
         }
 
-        private async  void textBox1_KeyDown(object sender, KeyEventArgs e)
+        private async void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
                 var value = this.textBox1.Text.Trim();
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    var res =await  client.GetInfoAsync(value, "");
+                    var res = await client.GetInfoAsync(value, "");
                     AddMessage(res.Body.GetInfoResult);
                 }
             }
@@ -220,6 +220,7 @@ namespace WindowsFormsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             HZAction ac = new HZAction();
             ac.BeginRun();
         }

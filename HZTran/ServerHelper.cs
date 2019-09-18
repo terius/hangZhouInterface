@@ -27,6 +27,7 @@ namespace HangZhouTran
                 if (AppConfig.SaveResData == 1)
                 {
                     var path = FileHelper.CreatePathWithDate("responseFiles");
+                    wbNo = FileHelper.ClearInvalidString(wbNo);
                     var xmlFile = Path.Combine(path, DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt");
                     FileHelper.SaveToFile(data, xmlFile);
                 }
@@ -138,7 +139,7 @@ namespace HangZhouTran
             return xmlItems;
         }
 
-        public static Dictionary<string, string> putData(string wbNo)
+        public static Dictionary<string, string> putData(string wbNo,ref string errMsg)
         {
             Dictionary<string, string> items = null;
             try
@@ -147,6 +148,7 @@ namespace HangZhouTran
                 if (AppConfig.SaveResData == 1)
                 {
                     var path = FileHelper.CreatePathWithDate("putResponseFiles");
+                    wbNo = FileHelper.ClearInvalidString(wbNo);
                     var xmlFile = Path.Combine(path, DateTime.Now.ToString("yyyyMMddHHmmssfff_") + wbNo + ".txt");
                     FileHelper.SaveToFile(data, xmlFile);
                 }
@@ -154,6 +156,7 @@ namespace HangZhouTran
             }
             catch (Exception ex)
             {
+                errMsg = ex.Message;
                 Loger.LogMessage("putData失败：" + ex.ToString());
             }
 

@@ -109,7 +109,6 @@ namespace Common
             MemoryStream Stream = new MemoryStream();
 
             XmlSerializer xml = new XmlSerializer(typeof(T));
-
             try
             {
                 XmlSerializerNamespaces ns = new XmlSerializerNamespaces();

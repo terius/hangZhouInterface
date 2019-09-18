@@ -233,6 +233,7 @@ namespace HangZhouTran
             if (AppConfig.SaveResData == 1)
             {
                 var path = FileHelper.CreatePathWithDate("BadFiles");
+                bill_no = FileHelper.ClearInvalidString(bill_no);
                 var xmlFile = Path.Combine(path, DateTime.Now.ToString("yyyyMMddHHmmssfff_") + bill_no + ".txt");
                 FileHelper.SaveToFile(data, xmlFile);
             }
@@ -242,19 +243,24 @@ namespace HangZhouTran
 
         private void PutData(string bill_no)
         {
-            var rs = ServerHelper.putData(bill_no);
+            string errMsg = "";
+            var rs = ServerHelper.putData(bill_no, ref errMsg);
             if (rs == null)
             {
-                throw new Exception("发送机检反馈错误");
-            }
-            if (rs["status"] == "0")
-            {
-                var errmsg = rs["errMsg"];
-                da.UpdateSendFlag2(bill_no, "2", errmsg);
+                da.UpdateSendFlag2(bill_no, "3", "发送回执处理错误,错误信息：" + errMsg);
+               
             }
             else
             {
-                da.UpdateSendFlag2(bill_no, "1", "回写成功");
+                if (rs["status"] == "0")
+                {
+                    var errmsg = rs["errMsg"];
+                    da.UpdateSendFlag2(bill_no, "2", errmsg);
+                }
+                else
+                {
+                    da.UpdateSendFlag2(bill_no, "1", "回写成功");
+                }
             }
         }
 
