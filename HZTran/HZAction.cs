@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -28,15 +27,14 @@ namespace HangZhouTran
                 // sbLog = new StringBuilder();
                 isRun = true;
                 CheckDirectory();
-                GetColumnMap();
                 Thread MainThread = new Thread(RunTask);
                 MainThread.IsBackground = true;
-                MainThread.Name = "HangZhouXrayServer";
+                MainThread.Name = "ReadFileThread";
                 MainThread.Start();
 
                 Thread MainThread2 = new Thread(RunTask2);
                 MainThread2.IsBackground = true;
-                MainThread2.Name = "HangZhouXrayServer2";
+                MainThread2.Name = "ReadTableThread";
                 MainThread2.Start();
 
             }
@@ -46,32 +44,11 @@ namespace HangZhouTran
             }
         }
 
-        private void GetColumnMap()
-        {
-
-            List<string> lines = File.ReadLines(Path.Combine(basePath, "table.txt")).ToList();
-            if (lines.Count < 2)
-            {
-                throw new Exception("映射文件错误");
-            }
-
-            var tables = lines[0].Split(new char[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
-            var xmls = lines[1].Split(new char[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
-            if (tables.Length != xmls.Length)
-            {
-                throw new Exception("字段对应数错误");
-            }
-            map = new List<ColumnMap>();
-            for (int i = 0; i < tables.Length; i++)
-            {
-                map.Add(new ColumnMap { Table = tables[i], XML = xmls[i] });
-            }
-
-        }
+      
 
         private void CheckDirectory()
         {
-            var path = AppDomain.CurrentDomain.BaseDirectory + "responseFiles";
+            var path = AppDomain.CurrentDomain.BaseDirectory + "send";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

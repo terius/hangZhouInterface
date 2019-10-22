@@ -220,9 +220,7 @@ namespace WindowsFormsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
-            HZAction ac = new HZAction();
-            ac.BeginRun();
+            var data = ExcelHelper.GetData(@"D:\work\CONs 主运单_子运单_站点 (009).xlsm", 2, 2, 3);
         }
     }
 }
