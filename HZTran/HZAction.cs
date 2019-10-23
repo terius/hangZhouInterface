@@ -2,10 +2,8 @@
 using DAL;
 using Model;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Text;
 using System.Threading;
 
 namespace HangZhouTran
@@ -14,17 +12,14 @@ namespace HangZhouTran
     {
         DataAction da = new DataAction();
         volatile bool isRun = false;
-        IList<ColumnMap> map;
         readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
-        StringBuilder sbLog = new StringBuilder();
+
         public void BeginRun()
         {
             try
             {
-
-
                 FileHelper.WriteLog("服务已启动");
-                // sbLog = new StringBuilder();
+                MyConfig.Load();
                 isRun = true;
                 CheckDirectory();
                 Thread MainThread = new Thread(RunTask);
@@ -32,10 +27,10 @@ namespace HangZhouTran
                 MainThread.Name = "ReadFileThread";
                 MainThread.Start();
 
-                Thread MainThread2 = new Thread(RunTask2);
-                MainThread2.IsBackground = true;
-                MainThread2.Name = "ReadTableThread";
-                MainThread2.Start();
+                //Thread MainThread2 = new Thread(RunTask2);
+                //MainThread2.IsBackground = true;
+                //MainThread2.Name = "ReadTableThread";
+                //MainThread2.Start();
 
             }
             catch (Exception ex)
@@ -44,158 +39,63 @@ namespace HangZhouTran
             }
         }
 
-      
+
 
         private void CheckDirectory()
         {
-            var path = AppDomain.CurrentDomain.BaseDirectory + "send";
+            var path = MyConfig.ScanPath;
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            path = AppDomain.CurrentDomain.BaseDirectory + "putResponseFiles";
+            path = MyConfig.SendPath;
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            path = AppDomain.CurrentDomain.BaseDirectory + "BadFiles";
+            path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory + "ScanFileSave");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = AppDomain.CurrentDomain.BaseDirectory + "Send";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
         }
 
+        #region 扫描文件夹
         object obRun = new object();
         private void RunTask()
         {
-            try
+            lock (obRun)
             {
-                lock (obRun)
+                while (isRun)
                 {
-                    while (isRun)
-                    {
-                        // sbLog.Clear();
-                        //FileHelper.WriteLog("开始读取数据");
-                        UpdateHead();
-                        // FileHelper.WriteLog(sbLog.ToString());
-                        Thread.Sleep(AppConfig.LoopTime1);
-                    }
+                    SendData();
+                    Thread.Sleep(MyConfig.LoopTime1);
                 }
-
-            }
-            catch (Exception ex)
-            {
-                FileHelper.WriteLog("任务出错，服务中止！错误信息：" + ex.Message);
-                Loger.LogMessage(ex);
             }
         }
 
-        object obRun2 = new object();
-        private void RunTask2()
+        private void SendData()
         {
             try
             {
-                lock (obRun2)
-                {
-                    while (isRun)
-                    {
-                        UpdateSendData();
-                        Thread.Sleep(AppConfig.LoopTime2);
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                FileHelper.WriteLog("任务出错，服务中止！错误信息：" + ex.Message);
-                Loger.LogMessage(ex);
-            }
-        }
-
-        private void UpdateSendData()
-        {
-            try
-            {
-                var data = da.GetNoSendData();
-                string bill_no;
-                foreach (DataRow dr in data.Rows)
-                {
-                    bill_no = dr["bill_no"].ToString();
-                    PutData(bill_no);
-                }
-            }
-            catch (Exception ex)
-            {
-                Loger.LogMessage(ex);
-            }
-        }
-
-
-
-        private void UpdateHead()
-        {
-            try
-            {
-                var ReadData = da.GetScanData();
+                var ReadData = da.GetNoSendData();
+                SendXML xml = null;
                 if (ReadData != null && ReadData.Rows.Count > 0)
                 {
-                    var getInfoStatus = "";
-                    string bill_no = "";
-                    int rs = 0;
-                    sbLog.Clear();
-                    string xmlData = "";
-                    string flag = "";
-                    foreach (DataRow dr in ReadData.Rows)
+                    foreach (DataRow row in ReadData.Rows)
                     {
-                        try
-                        {
-                            bill_no = dr["bill_no"].ToString();
-                            var eData = ServerHelper.GetOutputData2(bill_no, ref xmlData);
-                            if (eData == null)
-                            {
-                                flag = "4";
-                                da.UpdateSendFlag1(bill_no, flag, "电子口岸无反馈");
-                            }
-                            else
-                            {
-                                if (eData["status"] == "0")
-                                {
-                                    var errmsg = eData["errMsg"];
-                                    flag = "2";
-                                    da.UpdateSendFlag1(bill_no, flag, errmsg);
-                                }
-                                else
-                                {
-                                    flag = "1";
-                                    rs = da.UpdateTmp(map, eData);
-                                    if (rs < 1)
-                                    {
-                                        flag = "3";
-                                        da.UpdateSendFlag1(bill_no, flag, "数据异常无法写入");
-                                        SaveToBadPath(bill_no, xmlData);
-                                    }
-                                }
-                            }
-                            getInfoStatus = eData == null ? "fail" : "ok";
-                            sbLog.AppendLine($"bill_no:{bill_no},getInfo:{getInfoStatus},status:{eData["status"]},set send_flag1={flag}");
-                        }
-                        catch (Exception ex)
-                        {
-                            Loger.LogMessage("读取出错：" + ex.ToString());
-                            da.UpdateSendFlag1(bill_no, "3", "执行错误，错误信息：" + ex.Message);
-                            SaveToBadPath(bill_no, xmlData);
-                            sbLog.AppendLine(ex.Message);
-                        }
-
+                        xml = CreateSendXML(row);
+                        var fileName = Path.Combine(MyConfig.SendPath, DateTime.Now.ToString("send_yyyyMMddHHmmssfff.xml"));
+                        XmlHelper.SerializerToFile(xml, fileName);
                     }
-                    if (sbLog.Length > 0)
-                    {
-                        FileHelper.WriteLog(sbLog.ToString());
-                    }
-
-
 
                 }
             }
@@ -205,43 +105,20 @@ namespace HangZhouTran
             }
         }
 
-        private void SaveToBadPath(string bill_no, string data)
+        private SendXML CreateSendXML(DataRow row)
         {
-            if (AppConfig.SaveResData == 1)
-            {
-                var path = FileHelper.CreatePathWithDate("BadFiles");
-                bill_no = FileHelper.ClearInvalidString(bill_no);
-                var xmlFile = Path.Combine(path, DateTime.Now.ToString("yyyyMMddHHmmssfff_") + bill_no + ".txt");
-                FileHelper.SaveToFile(data, xmlFile);
-            }
+            var info = new SendXML();
+            info.Body.AWB_INFO.AWB = row["BILL_NO"].ToString();
+            info.Body.AWB_INFO.DEC_TYPE = row["DEC_TYPE"].ToString();
+            info.Body.AWB_INFO.MainAWB = da.GetBILLNOFromAWB(row["BILL_NO"].ToString());
+            info.Body.AWB_INFO.MX_TIME = ConvertHelper.ToDateTimeStr(row["MX_TIME"],"yyyyMMddHHmmss");
+            info.Body.AWB_INFO.M_RESULT = row["M_RESULT"].ToString();
+            info.Body.AWB_INFO.VOYAGE_NO = row["VOYAGE_NO"].ToString();
+
+            return info;
         }
 
-
-
-        private void PutData(string bill_no)
-        {
-            string errMsg = "";
-            var rs = ServerHelper.putData(bill_no, ref errMsg);
-            if (rs == null)
-            {
-                da.UpdateSendFlag2(bill_no, "3", "发送回执处理错误,错误信息：" + errMsg);
-               
-            }
-            else
-            {
-                if (rs["status"] == "0")
-                {
-                    var errmsg = rs["errMsg"];
-                    da.UpdateSendFlag2(bill_no, "2", errmsg);
-                }
-                else
-                {
-                    da.UpdateSendFlag2(bill_no, "1", "回写成功");
-                }
-            }
-        }
-
-
+        #endregion
 
 
         public void EndRun()

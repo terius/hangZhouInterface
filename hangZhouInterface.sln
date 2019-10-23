@@ -1,30 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.438
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{591BA812-A10A-45FD-A420-7B58104E95E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{DC9F0600-D707-40B5-8C63-85A1ED6130E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApplication1", "WindowsFormsApplication1\WindowsFormsApplication1.csproj", "{BDD5EA05-2BF6-4891-9695-9D8D763A0E4F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{39EAE9A2-07EB-4407-9A5C-4799FA093890} = {39EAE9A2-07EB-4407-9A5C-4799FA093890}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{8E148184-FBC1-4FEF-AE06-BE579951A560}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HangZhouService", "HangZhouService\HangZhouService.csproj", "{EC09CD47-C5A2-4E42-99A9-1AAD96B93F60}"
-	ProjectSection(ProjectDependencies) = postProject
-		{39EAE9A2-07EB-4407-9A5C-4799FA093890} = {39EAE9A2-07EB-4407-9A5C-4799FA093890}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HangZhouTran", "HZTran\HangZhouTran.csproj", "{DA07862A-497E-45F9-A3FC-D61B812912B9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{39EAE9A2-07EB-4407-9A5C-4799FA093890} = {39EAE9A2-07EB-4407-9A5C-4799FA093890}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{39EAE9A2-07EB-4407-9A5C-4799FA093890}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,10 +45,6 @@ Global
 		{DA07862A-497E-45F9-A3FC-D61B812912B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA07862A-497E-45F9-A3FC-D61B812912B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA07862A-497E-45F9-A3FC-D61B812912B9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

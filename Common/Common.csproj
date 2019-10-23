@@ -59,7 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppConfig.cs" />
+    <Compile Include="CovertHelper.cs" />
     <Compile Include="ExcelHelper.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="Loger.cs" />

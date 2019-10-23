@@ -371,27 +371,7 @@ namespace DAL
                 }
             }
         }
-        /// <summary>
-        /// 执行查询语句，返回SqlDataReader ( 注意：调用该方法后，一定要对SqlDataReader进行Close )
-        /// </summary>
-        /// <param name="strSQL">查询语句</param>
-        /// <returns>SqlDataReader</returns>
-        public static SqlDataReader ExecuteReader(string strSQL)
-        {
-            SqlConnection connection = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand(strSQL, connection);
-            try
-            {
-                connection.Open();
-                SqlDataReader myReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
-                return myReader;
-            }
-            catch (System.Data.SqlClient.SqlException e)
-            {
-                throw e;
-            }
 
-        }
         /// <summary>
         /// 执行查询语句，返回DataSet
         /// </summary>
@@ -543,7 +523,7 @@ namespace DAL
         }
 
 
-        public static int ExecuteSqlTran(Dictionary<string,SqlParameter[]> SQLStringList)
+        public static int ExecuteSqlTran(Dictionary<string, SqlParameter[]> SQLStringList)
         {
             int rs = 0;
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -555,7 +535,7 @@ namespace DAL
                     try
                     {
                         //循环
-                        foreach (KeyValuePair<string,SqlParameter[]> myDE in SQLStringList)
+                        foreach (KeyValuePair<string, SqlParameter[]> myDE in SQLStringList)
                         {
                             string cmdText = myDE.Key.ToString();
                             SqlParameter[] cmdParms = (SqlParameter[])myDE.Value;
@@ -573,14 +553,14 @@ namespace DAL
                     catch
                     {
                         trans.Rollback();
-                       // throw;
+                        // throw;
                     }
                 }
             }
             return rs;
         }
-      
-        
+
+
         /// <summary>
         /// 执行多条SQL语句，实现数据库事务。
         /// </summary>
@@ -667,28 +647,38 @@ namespace DAL
         /// </summary>
         /// <param name="strSQL">查询语句</param>
         /// <returns>SqlDataReader</returns>
-        public static SqlDataReader ExecuteReader(string SQLString, params SqlParameter[] cmdParms)
+        public static void ExecuteReader<V>(string SQLString, Func<SqlDataReader, V> toInfo,
+            params SqlParameter[] cmdParms)
         {
             SqlConnection connection = new SqlConnection(connectionString);
             SqlCommand cmd = new SqlCommand();
+            SqlDataReader myReader = null;
             try
             {
                 PrepareCommand(cmd, connection, null, SQLString, cmdParms);
-                SqlDataReader myReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                myReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
                 cmd.Parameters.Clear();
-                return myReader;
+                toInfo(myReader);
+             //   myReader.Close();
+                // return v;
             }
             catch (System.Data.SqlClient.SqlException e)
             {
                 throw e;
             }
-            //			finally
-            //			{
-            //				cmd.Dispose();
-            //				connection.Close();
-            //			}	
+            finally
+            {
+                if (myReader != null)
+                {
+                    myReader.Close();
+                }
+                cmd.Dispose();
+                connection.Close();
+            }
 
         }
+
+
 
         /// <summary>
         /// 执行查询语句，返回DataSet
