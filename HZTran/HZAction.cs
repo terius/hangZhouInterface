@@ -4,7 +4,6 @@ using Model;
 using System;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace HangZhouTran
@@ -75,14 +74,14 @@ namespace HangZhouTran
                 {
                     try
                     {
-                        var xmlData = ExcelHelper.GetData(file.FullName, 2, 2, 3);
-                        da.SaveScanDataForXLSM(xmlData);
+                        var excelData = ExcelHelper.GetData(file.FullName, 2, 2, 3);
+                        da.SaveScanDataForXLSM(excelData);
                         file.MoveTo(Path.Combine(saveScanFilePath, file.Name));
                     }
                     catch (Exception ex)
                     {
                         file.MoveTo(Path.Combine(badScanFilePath, file.Name));
-                        throw ex;
+                        Loger.LogMessage(ex);
                     }
 
                 }
@@ -93,12 +92,14 @@ namespace HangZhouTran
                 {
                     try
                     {
-                        var xmlData = ExcelHelper.GetData(file.FullName, 2, 2, 3);
+                        var xmlData = XmlHelper.DeserializeFromFile<awblist>(file.FullName);
+                        da.SaveScanDataForXML(xmlData);
+                        file.MoveTo(Path.Combine(saveScanFilePath, file.Name));
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        file.MoveTo(badScanFilePath);
-                        throw;
+                        file.MoveTo(Path.Combine(badScanFilePath, file.Name));
+                        Loger.LogMessage(ex);
                     }
                 }
             }

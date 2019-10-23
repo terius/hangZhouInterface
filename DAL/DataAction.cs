@@ -1,4 +1,5 @@
 ﻿using Common;
+using Model;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -45,10 +46,10 @@ namespace DAL
             return DbHelperSQL.ExecuteSql(UpdateSendFlag_SQL, sqlparams);
         }
 
-        string SaveScanData_SQL = "insert into AWB(BILL_NO,AWB) values (@BILL_NO,@AWB)";
+        string InsertAWB_SQL = "insert into AWB(BILL_NO,AWB) values (@BILL_NO,@AWB)";
         public int SaveScanDataForXLSM(DataTable data)
         {
-          
+
             string bill_no;
             string awb;
             int rs = 0;
@@ -63,12 +64,43 @@ namespace DAL
                 {
                     awb = row[1].ToString().Trim();
                 }
-               
-                SqlParameter[] sqlparams = {
+
+                rs += InsertAWB(bill_no, awb);
+            }
+            return rs;
+        }
+
+        private int InsertAWB(string bill_no, string awb)
+        {
+            SqlParameter[] sqlparams = {
                    new SqlParameter("@BILL_NO",bill_no),
                    new SqlParameter("@AWB",awb)
                 };
-                rs += DbHelperSQL.ExecuteSql(SaveScanData_SQL, sqlparams);
+            return DbHelperSQL.ExecuteSql(InsertAWB_SQL, sqlparams);
+        }
+
+
+        public int SaveScanDataForXML(awblist data)
+        {
+            int rs = 0;
+            string bill_no;
+            string awb;
+            foreach (var item in data.awb)
+            {
+                if (item.trklist != null && item.trklist.trknbr != null)
+                {
+                    foreach (var awbItem in item.trklist.trknbr)
+                    {
+                        bill_no = item.awbnbr;
+                        awb = awbItem;
+                        rs += InsertAWB(bill_no, awb);
+                    }
+                }
+                else
+                {
+                    bill_no = awb = item.awbnbr;
+                    rs += InsertAWB(bill_no, awb);
+                }
             }
             return rs;
         }
