@@ -220,7 +220,32 @@ namespace WindowsFormsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var data = ExcelHelper.GetData(@"D:\work\CONs 主运单_子运单_站点 (009).xlsm", 2, 2, 3);
+            var file = @"‪D:\work\MPS_IB_20190903160000.xml";
+            file = @"d:\2.xml";
+            //XmlDocument xDoc = new XmlDocument();
+            //xDoc.Load(file);
+            //XmlNodeList nodelist = xDoc.SelectNodes("awblist/awb");
+            //foreach (XmlNode node in nodelist)
+            //{
+            //   var aaa=node.SelectSingleNode("awbnbr").InnerText;
+            //}
+            // var data = ExcelHelper.GetData(@"D:\work\CONs 主运单_子运单_站点 (009).xlsm", 2, 2, 3);
+            var info = XmlHelper.DeserializeFromFile<awblist>(file);
+            //var list = new List<awb>();
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    //for (int j = 0; j < 3; j++)
+            //    //{
+
+            //    //}
+            //    list.Add(new awb
+            //    {
+            //        awbnbr = "1111",
+            //        trklist = new  trklist { trknbr = new List<string> { "zzzz","aaaaa"} }
+            //    });
+            //}
+            //var xmlInfo = new awblist { awb = list };
+            //var str = XmlHelper.Serializer(xmlInfo);
         }
     }
 }
