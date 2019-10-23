@@ -20,33 +20,36 @@ namespace WindowsFormsApplication1
 
         private void btnReadFile_Click(object sender, EventArgs e)
         {
-            
+
         }
 
-   
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
-           // action.BeginRun();
+            // action.BeginRun();
         }
 
-    
 
-        private  void textBox1_KeyDown(object sender, KeyEventArgs e)
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
-         
+
         }
 
-       
 
+        readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
         private void button1_Click(object sender, EventArgs e)
         {
+
             MyConfig.Load();
-            var path = MyConfig.ScanPath;
+            var path =  Path.Combine(basePath, MyConfig.ScanPath);
+        //    path = @"D:\Study2\杭州系统\hangZhouInterface\WindowsFormsApplication1\bin\Debug\‪files";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
+            return;
             var file = @"‪D:\work\MPS_IB_20190903160000.xml";
             file = @"d:\2.xml";
             //XmlDocument xDoc = new XmlDocument();
@@ -75,4 +78,7 @@ namespace WindowsFormsApplication1
             var str = XmlHelper.Serializer(xmlInfo);
         }
     }
+
+
+
 }
