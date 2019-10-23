@@ -21,12 +21,20 @@ namespace Model
 
     public class Head
     {
-        public string MessageID => MyConfig.XMLHEAD_MessageID;
-        public string MessageType => MyConfig.XMLHEAD_MessageType;
-        public string Sender => MyConfig.XMLHEAD_Sender;
+        public Head()
+        {
+            MessageID = MyConfig.XMLHEAD_MessageID;
+            MessageType = MyConfig.XMLHEAD_MessageType;
+            Sender = MyConfig.XMLHEAD_Sender;
+            SendTime = DateTime.Now.ToString("yyyyMMddHHmmss");
+            Version = MyConfig.XMLHEAD_Version;
+        }
+        public string MessageID { get; set; }
+        public string MessageType { get; set; }
+        public string Sender { get; set; }
 
-        public string SendTime => DateTime.Now.ToString("yyyyMMddHHmmss");
-        public string Version => MyConfig.XMLHEAD_Version;
+        public string SendTime { get; set; }
+        public string Version { get; set; }
 
     }
 
@@ -41,6 +49,10 @@ namespace Model
 
     public class AWB_INFO
     {
+        public AWB_INFO()
+        {
+            Site = "1";
+        }
         public string VOYAGE_NO { get; set; }
         public string MainAWB { get; set; }
         public string AWB { get; set; }
@@ -49,7 +61,7 @@ namespace Model
         public string DEC_TYPE { get; set; }
 
         public string M_RESULT { get; set; }
-        public string Site => "1";
+        public string Site { get; set; }
 
     }
 }

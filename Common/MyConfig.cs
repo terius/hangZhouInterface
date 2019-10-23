@@ -4,7 +4,7 @@ namespace Common
 {
     public class MyConfig
     {
-        public static void Load()
+        static MyConfig()
         {
             var appSettings = System.Configuration.ConfigurationManager.AppSettings;
             LoopTime1 = Convert.ToInt32(appSettings["LoopTime1"]);

@@ -27,7 +27,7 @@ namespace WindowsFormsApplication1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // action.BeginRun();
+             action.BeginRun();
         }
 
 
@@ -42,14 +42,7 @@ namespace WindowsFormsApplication1
         private void button1_Click(object sender, EventArgs e)
         {
 
-            MyConfig.Load();
-            var path =  Path.Combine(basePath, MyConfig.ScanPath);
-        //    path = @"D:\Study2\杭州系统\hangZhouInterface\WindowsFormsApplication1\bin\Debug\‪files";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            return;
+           
             var file = @"‪D:\work\MPS_IB_20190903160000.xml";
             file = @"d:\2.xml";
             //XmlDocument xDoc = new XmlDocument();
