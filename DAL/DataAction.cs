@@ -8,11 +8,11 @@ namespace DAL
     public class DataAction
     {
         private string TableName;
-        private string GetNoSendData_SQL = "select  {0} from {1} where send_flag = 0";
+        private string GetNoSendData_SQL = "select  VOYAGE_NO,BILL_NO,AWB,MX_TIME,DEC_TYPE,M_RESULT from {1} where send_flag = 0";
         public DataAction()
         {
             TableName = MyConfig.TableName;
-            GetNoSendData_SQL = string.Format(GetNoSendData_SQL, MyConfig.SelectColumn, TableName);
+            GetNoSendData_SQL = string.Format(GetNoSendData_SQL, TableName);
             UpdateSendFlag_SQL = string.Format(UpdateSendFlag_SQL, TableName);
         }
 

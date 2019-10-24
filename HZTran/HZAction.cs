@@ -162,9 +162,9 @@ namespace HangZhouTran
         private SendXML CreateSendXML(DataRow row)
         {
             var info = new SendXML();
-            info.Body.AWB_INFO.AWB = row["BILL_NO"].ToString();
+            info.Body.AWB_INFO.AWB = row["AWB"].ToString();
             info.Body.AWB_INFO.DEC_TYPE = row["DEC_TYPE"].ToString();
-            info.Body.AWB_INFO.MainAWB = da.GetBILLNOFromAWB(row["BILL_NO"].ToString());
+            info.Body.AWB_INFO.MainAWB = row["BILL_NO"].ToString();
             info.Body.AWB_INFO.MX_TIME = ConvertHelper.ToDateTimeStr(row["MX_TIME"], "yyyyMMddHHmmss");
             info.Body.AWB_INFO.M_RESULT = row["M_RESULT"].ToString();
             info.Body.AWB_INFO.VOYAGE_NO = row["VOYAGE_NO"].ToString();

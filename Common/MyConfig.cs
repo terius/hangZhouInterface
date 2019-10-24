@@ -13,7 +13,6 @@ namespace Common
             SaveLog = Convert.ToInt32(appSettings["SaveLog"]);
             TableName = appSettings["TableName"];
             ScanPath = appSettings["ScanPath"];
-            SelectColumn = appSettings["SelectColumn"];
             XMLHEAD_MessageID = appSettings["MessageID"];
             XMLHEAD_MessageType = appSettings["MessageType"];
             XMLHEAD_Sender = appSettings["Sender"];
@@ -31,7 +30,7 @@ namespace Common
 
         public static string ScanPath { get; private set; }
 
-        public static string SelectColumn { get; private set; }
+ 
 
         public static string XMLHEAD_MessageID { get; private set; }
         public static string XMLHEAD_MessageType { get; private set; }
