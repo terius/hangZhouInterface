@@ -27,7 +27,8 @@ namespace WindowsFormsApplication1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-             action.BeginRun();
+           
+            action.BeginRun();
         }
 
 
@@ -42,7 +43,7 @@ namespace WindowsFormsApplication1
         private void button1_Click(object sender, EventArgs e)
         {
 
-           
+
             var file = @"‪D:\work\MPS_IB_20190903160000.xml";
             file = @"d:\2.xml";
             //XmlDocument xDoc = new XmlDocument();

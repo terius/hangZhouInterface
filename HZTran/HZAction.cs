@@ -12,7 +12,7 @@ namespace HangZhouTran
     {
         DataAction da = new DataAction();
         volatile bool isRun = false;
-        //    readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
+        readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
         readonly string saveScanFilePath = "ScanFilesSave";
         readonly string badScanFilePath = "ScanFilesBad";
 
@@ -65,22 +65,22 @@ namespace HangZhouTran
 
         private void ScanFiles()
         {
-            DirectoryInfo di = new DirectoryInfo(MyConfig.ScanPath);
+            DirectoryInfo di = new DirectoryInfo(Path.Combine(basePath, MyConfig.ScanPath));
 
             if (MyConfig.ReadType == 1)//扫描.xlsm文件
             {
-               
+
                 foreach (var file in di.EnumerateFiles("*.xlsm"))
                 {
                     try
                     {
                         var excelData = ExcelHelper.GetData(file.FullName, 2, 2, 3);
                         da.SaveScanDataForXLSM(excelData);
-                        file.MoveTo(Path.Combine(saveScanFilePath, file.Name));
+                        file.MoveTo(Path.Combine(basePath, saveScanFilePath, file.Name));
                     }
                     catch (Exception ex)
                     {
-                        file.MoveTo(Path.Combine(badScanFilePath, file.Name));
+                        file.MoveTo(Path.Combine(basePath,badScanFilePath, file.Name));
                         Loger.LogMessage(ex);
                     }
 
@@ -94,11 +94,11 @@ namespace HangZhouTran
                     {
                         var xmlData = XmlHelper.DeserializeFromFile<awblist>(file.FullName);
                         da.SaveScanDataForXML(xmlData);
-                        file.MoveTo(Path.Combine(saveScanFilePath, file.Name));
+                        file.MoveTo(Path.Combine(basePath,saveScanFilePath, file.Name));
                     }
                     catch (Exception ex)
                     {
-                        file.MoveTo(Path.Combine(badScanFilePath, file.Name));
+                        file.MoveTo(Path.Combine(basePath,badScanFilePath, file.Name));
                         Loger.LogMessage(ex);
                     }
                 }
@@ -138,7 +138,7 @@ namespace HangZhouTran
                         {
                             bill_no = row["BILL_NO"].ToString();
                             xml = CreateSendXML(row);
-                            var fileName = Path.Combine(MyConfig.SendPath, "send_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml");
+                            var fileName = Path.Combine(basePath, MyConfig.SendPath, "send_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml");
                             XmlHelper.SerializerToFile(xml, fileName);
                             da.UpdateSendFlag(bill_no, "1");
                         }
@@ -178,25 +178,25 @@ namespace HangZhouTran
 
         private void CheckDirectory()
         {
-            var path = MyConfig.ScanPath;
+            var path = Path.Combine(basePath, MyConfig.ScanPath);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            path = MyConfig.SendPath;
+            path = Path.Combine(basePath, MyConfig.SendPath);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            path = saveScanFilePath;
+            path = Path.Combine(basePath, saveScanFilePath);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            path = badScanFilePath;
+            path = Path.Combine(basePath, badScanFilePath);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
