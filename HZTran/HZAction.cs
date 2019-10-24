@@ -58,7 +58,7 @@ namespace HangZhouTran
                 while (isRun)
                 {
                     ScanFiles();
-                    Thread.Sleep(MyConfig.LoopTime1);
+                    Thread.Sleep(MyConfig.LoopTimeForScan);
                 }
             }
         }
@@ -117,7 +117,7 @@ namespace HangZhouTran
                 while (isRun)
                 {
                     SendData();
-                    Thread.Sleep(MyConfig.LoopTime2);
+                    Thread.Sleep(MyConfig.LoopTimeForRead);
                 }
             }
         }
