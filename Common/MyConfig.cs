@@ -18,6 +18,7 @@ namespace Common
             XMLHEAD_Sender = appSettings["Sender"];
             XMLHEAD_Version = appSettings["Version"];
             SendPath = appSettings["SendPath"];
+            SendPathBak = appSettings["SendPathBak"];
         }
 
         public static int LoopTimeForScan { get; private set; }
@@ -38,5 +39,7 @@ namespace Common
         public static string XMLHEAD_Version { get; private set; }
 
         public static string SendPath { get; private set; }
+
+        public static string SendPathBak { get; private set; }
     }
 }

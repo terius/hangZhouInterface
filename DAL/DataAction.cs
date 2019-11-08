@@ -32,15 +32,15 @@ namespace DAL
             return ob != null ? ob.ToString() : awb;
         }
 
-        string UpdateSendFlag_SQL = "update {0} set send_flag=@send_flag where bill_no = @bill_no";
-        public int UpdateSendFlag(string bill_no, string send_flag)
+        string UpdateSendFlag_SQL = "update {0} set send_flag=@send_flag where AWB = @AWB";
+        public int UpdateSendFlag(string AWB, string send_flag)
         {
-            if (string.IsNullOrWhiteSpace(bill_no))
+            if (string.IsNullOrWhiteSpace(AWB))
             {
                 return 0;
             }
             SqlParameter[] sqlparams = {
-                new SqlParameter("@bill_no",bill_no),
+                new SqlParameter("@AWB",AWB),
                 new SqlParameter("@send_flag",send_flag)
             };
             return DbHelperSQL.ExecuteSql(UpdateSendFlag_SQL, sqlparams);

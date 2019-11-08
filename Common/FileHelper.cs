@@ -69,14 +69,15 @@ namespace Common
         {
             if (!string.IsNullOrWhiteSpace(content))
             {
-                using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
-                {
-                    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
-                    {
-                        sw.Write(content);
-                        sw.Close();
-                    }
-                }
+                File.WriteAllText(fileName, content);
+                //using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+                //{
+                //    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+                //    {
+                //        sw.Write(content);
+                //        sw.Close();
+                //    }
+                //}
             }
         }
 

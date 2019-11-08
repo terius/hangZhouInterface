@@ -16,6 +16,7 @@ namespace HangZhouTran
         readonly string saveScanFilePath = "ScanFilesSave";
         readonly string badScanFilePath = "ScanFilesBad";
 
+
         public void BeginRun()
         {
             try
@@ -80,7 +81,7 @@ namespace HangZhouTran
                     }
                     catch (Exception ex)
                     {
-                        file.MoveTo(Path.Combine(basePath,badScanFilePath, file.Name));
+                        file.MoveTo(Path.Combine(basePath, badScanFilePath, file.Name));
                         Loger.LogMessage(ex);
                     }
 
@@ -94,11 +95,11 @@ namespace HangZhouTran
                     {
                         var xmlData = XmlHelper.DeserializeFromFile<awblist>(file.FullName);
                         da.SaveScanDataForXML(xmlData);
-                        file.MoveTo(Path.Combine(basePath,saveScanFilePath, file.Name));
+                        file.MoveTo(Path.Combine(basePath, saveScanFilePath, file.Name));
                     }
                     catch (Exception ex)
                     {
-                        file.MoveTo(Path.Combine(basePath,badScanFilePath, file.Name));
+                        file.MoveTo(Path.Combine(basePath, badScanFilePath, file.Name));
                         Loger.LogMessage(ex);
                     }
                 }
@@ -130,21 +131,30 @@ namespace HangZhouTran
                 SendXML xml = null;
                 if (ReadData != null && ReadData.Rows.Count > 0)
                 {
-                    string bill_no = "";
+                    string AWB = "";
+                    string fileName = "";
+                    string fileFullName = "";
                     foreach (DataRow row in ReadData.Rows)
                     {
 
                         try
                         {
-                            bill_no = row["BILL_NO"].ToString();
+                            AWB = row["AWB"].ToString();
                             xml = CreateSendXML(row);
-                            var fileName = Path.Combine(basePath, MyConfig.SendPath, "send_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml");
-                            XmlHelper.SerializerToFile(xml, fileName);
-                            da.UpdateSendFlag(bill_no, "1");
+                            fileName = AWB + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml";
+                            fileFullName = Path.Combine(basePath, MyConfig.SendPath, fileName);
+                            XmlHelper.SerializerToFile(xml, fileFullName);
+                            if (!string.IsNullOrWhiteSpace(MyConfig.SendPathBak))
+                            {
+                                fileFullName = Path.Combine(FileHelper.CreatePathWithDate(MyConfig.SendPathBak), fileName);
+                                XmlHelper.SerializerToFile(xml, fileFullName);
+                            }
+
+                            da.UpdateSendFlag(AWB, "1");
                         }
                         catch (Exception ex)
                         {
-                            da.UpdateSendFlag(bill_no, "2");
+                            da.UpdateSendFlag(AWB, "2");
                             Loger.LogMessage(ex);
                         }
 
