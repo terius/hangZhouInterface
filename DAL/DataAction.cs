@@ -69,19 +69,37 @@ namespace DAL
                         awb = row1;
                     }
 
-                    rs += InsertAWB(bill_no, awb);
+                    rs += InsertOrUpdateAWB(bill_no, awb);
+
                 }
             }
             return rs;
         }
 
-        private int InsertAWB(string bill_no, string awb)
+
+
+        private bool CheckAWBIsDup(string awb)
+        {
+            SqlParameter[] sqlparams = {
+                   new SqlParameter("@awb",awb)
+                };
+            return DbHelperSQL.Exists("select count(1) from AWB where awb = @awb", sqlparams);
+        }
+
+        private int InsertOrUpdateAWB(string bill_no, string awb)
         {
             SqlParameter[] sqlparams = {
                    new SqlParameter("@BILL_NO",bill_no),
                    new SqlParameter("@AWB",awb)
                 };
-            return DbHelperSQL.ExecuteSql(InsertAWB_SQL, sqlparams);
+            if (CheckAWBIsDup(awb))
+            {
+                return DbHelperSQL.ExecuteSql("update AWB set BILL_NO=@BILL_NO where AWB = @AWB", sqlparams);
+            }
+            else
+            {
+                return DbHelperSQL.ExecuteSql(InsertAWB_SQL, sqlparams);
+            }
         }
 
 
@@ -98,13 +116,13 @@ namespace DAL
                     {
                         bill_no = item.awbnbr;
                         awb = awbItem;
-                        rs += InsertAWB(bill_no, awb);
+                        rs += InsertOrUpdateAWB(bill_no, awb);
                     }
                 }
                 else
                 {
                     bill_no = awb = item.awbnbr;
-                    rs += InsertAWB(bill_no, awb);
+                    rs += InsertOrUpdateAWB(bill_no, awb);
                 }
             }
             return rs;
