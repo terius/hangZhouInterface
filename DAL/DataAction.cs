@@ -53,19 +53,24 @@ namespace DAL
             string bill_no;
             string awb;
             int rs = 0;
+            string row1 = "";
             foreach (DataRow row in data.Rows)
             {
                 bill_no = row[0].ToString().Trim();
-                if (row[1] == null || string.IsNullOrWhiteSpace(row[1].ToString()))
+                row1 = row[1] == null ? "" : row[1].ToString().Trim();
+                if (!string.IsNullOrWhiteSpace(bill_no))
                 {
-                    awb = bill_no;
-                }
-                else
-                {
-                    awb = row[1].ToString().Trim();
-                }
+                    if (string.IsNullOrWhiteSpace(row1))
+                    {
+                        awb = bill_no;
+                    }
+                    else
+                    {
+                        awb = row1;
+                    }
 
-                rs += InsertAWB(bill_no, awb);
+                    rs += InsertAWB(bill_no, awb);
+                }
             }
             return rs;
         }
