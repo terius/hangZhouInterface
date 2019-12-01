@@ -140,7 +140,8 @@ namespace HangZhouTran
                         try
                         {
                             AWB = row["AWB"].ToString();
-                            xml = CreateSendXML(row);
+                            FileHelper.WriteLog($"开始处理{AWB}的数据");
+                            xml =  CreateSendXML(row);
                             fileName = AWB + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml";
                             fileFullName = Path.Combine(basePath, MyConfig.SendPath, fileName);
                             XmlHelper.SerializerToFile(xml, fileFullName);
@@ -149,8 +150,8 @@ namespace HangZhouTran
                                 fileFullName = Path.Combine(FileHelper.CreatePathWithDate(MyConfig.SendPathBak), fileName);
                                 XmlHelper.SerializerToFile(xml, fileFullName);
                             }
-
                             da.UpdateSendFlag(AWB, "1");
+                            Thread.Sleep(10);
                         }
                         catch (Exception ex)
                         {

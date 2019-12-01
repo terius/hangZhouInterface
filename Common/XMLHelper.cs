@@ -138,7 +138,11 @@ namespace Common
         {
             var xmlString = Serializer<T>(obj);
 
-            FileHelper.SaveToFile(xmlString, fileName);
+           var rs=  FileHelper.SaveToFile(xmlString, fileName);
+            if (rs)
+            {
+                FileHelper.WriteLog($"{fileName}保存成功");
+            }
 
         }
 

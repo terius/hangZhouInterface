@@ -65,11 +65,12 @@ namespace Common
             return path;
         }
 
-        public static void SaveToFile(string content, string fileName)
+        public static bool SaveToFile(string content, string fileName)
         {
             if (!string.IsNullOrWhiteSpace(content))
             {
                 File.WriteAllText(fileName, content);
+                return true;
                 //using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
                 //{
                 //    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
@@ -79,6 +80,7 @@ namespace Common
                 //    }
                 //}
             }
+            return false;
         }
 
         /// <summary>
