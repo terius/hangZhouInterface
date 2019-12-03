@@ -1,5 +1,6 @@
 ﻿using Common;
 using Model;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -18,6 +19,18 @@ namespace DAL
         public DataTable GetNoSendDataForScan()
         {
             return DbHelperSQL.Query(GetNoSendDataForScan_SQL).Tables[0];
+        }
+
+
+        readonly string UpdateScanTable_SQL = "update SCAN set RETURNINFO = @RETURNINFO,RETURNTIME=@RETURNTIME,SEND_FLAG=1,SEND_TIME=getdate() where ";
+        public int UpdateScanTable(ResultXML info)
+        {
+            DateTime returnTime = DateTime.Parse(info.returnTime);
+            SqlParameter[] sqlparams = {
+                new SqlParameter("@RETURNINFO",info.returnInfo),
+                new SqlParameter("@RETURNTIME",returnTime)
+            };
+            return DbHelperSQL.ExecuteSql(UpdateScanTable_SQL, sqlparams);
         }
 
 

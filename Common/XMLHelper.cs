@@ -139,8 +139,14 @@ namespace Common
 
         public static void SerializerToFile<T>(T obj, string fileName)
         {
-            var xmlString = Serializer<T>(obj);
+            var xmlString = Serializer(obj);
+            SerializerStringToFile(xmlString, fileName);
 
+        }
+
+
+        public static void SerializerStringToFile(string xmlString, string fileName)
+        {
             var rs = FileHelper.SaveToFile(xmlString, fileName);
             if (rs)
             {

@@ -15,9 +15,11 @@ namespace HangZhouTran
         DataAction da = new DataAction();
         volatile bool isRun = false;
         readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
-        readonly string saveScanFilePath = "ScanFilesSave";
-        readonly string badScanFilePath = "ScanFilesBad";
+
         readonly string serverUrl = MyConfig.ServerUrl;
+        readonly int loopTimeForOracle = MyConfig.LoopTimeBeforeReadOracle;
+        readonly string scanPath = MyConfig.ScanPath;
+        readonly string webPath = MyConfig.WebServicePath;
 
         public void BeginRun()
         {
@@ -49,6 +51,24 @@ namespace HangZhouTran
         }
 
 
+        private void CheckDirectory()
+        {
+            var path = Path.Combine(basePath, scanPath);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = Path.Combine(basePath, webPath);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+
+        }
+
+
 
 
 
@@ -74,7 +94,11 @@ namespace HangZhouTran
                 if (ReadData != null && ReadData.Rows.Count > 0)
                 {
                     ScanXML xml = null;
+                    ResultXML resultXML = null;
                     string xmlStr = "";
+                    string result = "";
+                    string fileName = "";
+                    string fileFullName = "";
                     foreach (DataRow row in ReadData.Rows)
                     {
 
@@ -84,7 +108,18 @@ namespace HangZhouTran
                             xmlStr = XmlHelper.Serializer(xml);
                            // xmlStr = XmlHelper.XML2HtmlEnCode(xmlStr);
                             var requestStr = string.Format("Request={0}&person_code={1}&login_pwd={2}&xmltype={3}", xmlStr, "fzj", "fzjAAA111aaa", "LOGISTICS_LIBRARY");
-                            var result = SendDataPost(requestStr);
+                            result = SendDataPost(requestStr);
+                            resultXML = XmlHelper.Deserialize<ResultXML>(result);
+                            int saveResult = da.UpdateScanTable(resultXML);
+
+                            fileName = xml.BILLNO + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml";
+                            fileFullName = FileHelper.CreateFileNameWithDate(scanPath, fileName);
+                            XmlHelper.SerializerStringToFile(xmlStr, fileFullName);
+
+                            fileFullName = FileHelper.CreateFileNameWithDate(webPath, fileName);
+                            XmlHelper.SerializerToFile(resultXML, fileFullName);
+
+                            Thread.Sleep(loopTimeForOracle);
                             FileHelper.WriteLog(result);
                             //<?xml version="1.0" encoding="utf-8"?><LOGISTICS_LIBRARY><BILLNO>aaaaa</BILLNO><LOGISTICSNO>bbbbb</LOGISTICSNO><JQBH>CT31</JQBH><V_TYPE>50</V_TYPE><I_E_FLAG>I</I_E_FLAG><V_SOURCE>0</V_SOURCE><LOGISTICSCODE>410198Z062</LOGISTICSCODE><CUSTOMSCODE>4605</CUSTOMSCODE></LOGISTICS_LIBRARY>
                        
@@ -227,33 +262,7 @@ namespace HangZhouTran
 
 
 
-        private void CheckDirectory()
-        {
-            var path = Path.Combine(basePath, MyConfig.ScanPath);
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            path = Path.Combine(basePath, MyConfig.SendPath);
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            path = Path.Combine(basePath, saveScanFilePath);
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            path = Path.Combine(basePath, badScanFilePath);
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-        }
+     
 
         public void EndRun()
         {

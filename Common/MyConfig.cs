@@ -21,6 +21,8 @@ namespace Common
             SendPathBak = appSettings["SendPathBak"];
 
             ServerUrl = appSettings["ServerUrl"];
+            LoopTimeBeforeReadOracle = Convert.ToInt32(appSettings["LoopTimeBeforeReadOracle"]);
+            WebServicePath = appSettings["WebServicePath"];
         }
 
         public static int LoopTimeForScan { get; private set; }
@@ -44,6 +46,12 @@ namespace Common
 
         public static string SendPathBak { get; private set; }
 
+
         public static string ServerUrl { get; private set; }
+        public static int LoopTimeBeforeReadOracle { get; private set; }
+
+        public static string WebServicePath { get; private set; }
+
+        
     }
 }

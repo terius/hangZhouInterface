@@ -65,6 +65,16 @@ namespace Common
             return path;
         }
 
+        public static string CreateFileNameWithDate(string pathName, string fileName)
+        {
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, pathName, DateTime.Now.ToString("yyyyMMdd"));
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return Path.Combine(path, fileName);
+        }
+
         public static bool SaveToFile(string content, string fileName)
         {
             if (!string.IsNullOrWhiteSpace(content))
@@ -95,7 +105,7 @@ namespace Common
                 fileName = fileName.Replace(rInvalidChar.ToString(), string.Empty);
             }
             return fileName;
-              
+
         }
     }
 }
