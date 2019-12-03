@@ -35,7 +35,7 @@ namespace Model
 
         public string SendTime { get; set; }
         public string Version { get; set; }
-
+        public string Version1111 { get; set; }
     }
 
     public class Body
