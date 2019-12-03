@@ -4,6 +4,8 @@ using Model;
 using System;
 using System.Data;
 using System.IO;
+using System.Net;
+using System.Text;
 using System.Threading;
 
 namespace HangZhouTran
@@ -15,7 +17,7 @@ namespace HangZhouTran
         readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
         readonly string saveScanFilePath = "ScanFilesSave";
         readonly string badScanFilePath = "ScanFilesBad";
-
+        readonly string serverUrl = MyConfig.ServerUrl;
 
         public void BeginRun()
         {
@@ -32,10 +34,10 @@ namespace HangZhouTran
                 MainThread.Start();
 
                 //读取数据
-                Thread MainThread2 = new Thread(RunTask2);
-                MainThread2.IsBackground = true;
-                MainThread2.Name = "SendDataToFileThread";
-                MainThread2.Start();
+                //Thread MainThread2 = new Thread(RunTask2);
+                //MainThread2.IsBackground = true;
+                //MainThread2.Name = "SendDataToFileThread";
+                //MainThread2.Start();
 
 
 
@@ -50,7 +52,7 @@ namespace HangZhouTran
 
 
 
-        #region 扫描文件夹中数据保存到数据库
+        #region 扫描Scan表
         object obRun = new object();
         private void RunTask()
         {
@@ -58,58 +60,96 @@ namespace HangZhouTran
             {
                 while (isRun)
                 {
-                    ScanFiles();
+                    ReadTableScan();
                     Thread.Sleep(MyConfig.LoopTimeForScan);
                 }
             }
         }
 
-        private void ScanFiles()
+        private void ReadTableScan()
         {
-            DirectoryInfo di = new DirectoryInfo(Path.Combine(basePath, MyConfig.ScanPath));
-
-            if (MyConfig.ReadType == 1)//扫描.xlsm文件
+            try
             {
-
-                foreach (var file in di.EnumerateFiles("*.xlsm"))
+                var ReadData = da.GetNoSendDataForScan();
+                if (ReadData != null && ReadData.Rows.Count > 0)
                 {
-                    try
+                    ScanXML xml = null;
+                    string xmlStr = "";
+                    foreach (DataRow row in ReadData.Rows)
                     {
-                        var excelData = ExcelHelper.GetData(file.FullName, 2, 2, 3);
-                        da.SaveScanDataForXLSM(excelData);
-                        file.MoveTo(Path.Combine(basePath, saveScanFilePath, file.Name));
-                    }
-                    catch (Exception ex)
-                    {
-                        file.MoveTo(Path.Combine(basePath, badScanFilePath, file.Name));
-                        Loger.LogMessage(ex);
+
+                        try
+                        {
+                            xml = CreateScanXML(row);
+                            xmlStr = XmlHelper.Serializer(xml);
+                           // xmlStr = XmlHelper.XML2HtmlEnCode(xmlStr);
+                            var requestStr = string.Format("Request={0}&person_code={1}&login_pwd={2}&xmltype={3}", xmlStr, "fzj", "fzjAAA111aaa", "LOGISTICS_LIBRARY");
+                            var result = SendDataPost(requestStr);
+                            FileHelper.WriteLog(result);
+                            //<?xml version="1.0" encoding="utf-8"?><LOGISTICS_LIBRARY><BILLNO>aaaaa</BILLNO><LOGISTICSNO>bbbbb</LOGISTICSNO><JQBH>CT31</JQBH><V_TYPE>50</V_TYPE><I_E_FLAG>I</I_E_FLAG><V_SOURCE>0</V_SOURCE><LOGISTICSCODE>410198Z062</LOGISTICSCODE><CUSTOMSCODE>4605</CUSTOMSCODE></LOGISTICS_LIBRARY>
+                       
+                        }
+                        catch (Exception ex)
+                        {
+                            Loger.LogMessage(ex.ToString());
+                        }
+
                     }
 
                 }
             }
-            else //扫描xml文件
+            catch (Exception ex)
             {
-                foreach (var file in di.EnumerateFiles("*.xml"))
-                {
-                    try
-                    {
-                        var xmlData = XmlHelper.DeserializeFromFile<awblist>(file.FullName);
-                        da.SaveScanDataForXML(xmlData);
-                        file.MoveTo(Path.Combine(basePath, saveScanFilePath, file.Name));
-                    }
-                    catch (Exception ex)
-                    {
-                        file.MoveTo(Path.Combine(basePath, badScanFilePath, file.Name));
-                        Loger.LogMessage(ex);
-                    }
-                }
+
+                Loger.LogMessage(ex);
             }
 
         }
 
+        private string SendDataPost(string strXML)
+        {
+            string str = "";
+            try
+            {
+                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(new Uri(serverUrl));
+                byte[] bytes = Encoding.UTF8.GetBytes(strXML);
+                httpWebRequest.Method = "Post";
+                httpWebRequest.ContentType = "application/x-www-form-urlencoded";
+                httpWebRequest.ContentLength = (long)bytes.Length;
+                Stream requestStream = httpWebRequest.GetRequestStream();
+                requestStream.Write(bytes, 0, bytes.Length);
+                requestStream.Close();
+                HttpWebResponse response = (HttpWebResponse)httpWebRequest.GetResponse();
+                StreamReader streamReader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("UTF-8"));
+                str = streamReader.ReadToEnd();
+                streamReader.Close();
+                response.Close();
+            }
+            catch (Exception ex)
+            {
+                Loger.LogMessage(ex.ToString());
+            }
+            return str;
+        }
+
+        private ScanXML CreateScanXML(DataRow row)
+        {
+            var info = new ScanXML();
+            info.BILLNO = row["BILLNO"].ToString();
+            info.CUSTOMSCODE = row["CUSTOMSCODE"].ToString();
+            info.I_E_FLAG = row["I_E_FLAG"].ToString();
+            info.JQBH = row["JQBH"].ToString();
+            info.LOGISTICSCODE = row["LOGISTICSCODE"].ToString();
+            info.LOGISTICSNO = row["LOGISTICSNO"].ToString();
+            info.V_SOURCE = row["V_SOURCE"].ToString();
+            info.V_TYPE = row["V_TYPE"].ToString();
+
+            return info;
+        }
+
         #endregion
 
-        #region 读取send_flag=0的数据发送到指定文件夹中
+        #region 扫描TMP表
         object obRun2 = new object();
         private void RunTask2()
         {
@@ -117,17 +157,17 @@ namespace HangZhouTran
             {
                 while (isRun)
                 {
-                    SendData();
+                    ReadTableTMP();
                     Thread.Sleep(MyConfig.LoopTimeForRead);
                 }
             }
         }
 
-        private void SendData()
+        private void ReadTableTMP()
         {
             try
             {
-                var ReadData = da.GetNoSendData();
+                var ReadData = da.GetNoSendDataForScan();
                 SendXML xml = null;
                 if (ReadData != null && ReadData.Rows.Count > 0)
                 {
@@ -141,7 +181,7 @@ namespace HangZhouTran
                         {
                             AWB = row["AWB"].ToString();
                             FileHelper.WriteLog($"开始处理{AWB}的数据");
-                            xml =  CreateSendXML(row);
+                            xml = CreateSendXML(row);
                             fileName = AWB + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml";
                             fileFullName = Path.Combine(basePath, MyConfig.SendPath, fileName);
                             XmlHelper.SerializerToFile(xml, fileFullName);

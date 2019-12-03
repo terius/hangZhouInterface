@@ -8,17 +8,16 @@ namespace DAL
     public class DataAction
     {
         private string TableName;
-        private string GetNoSendData_SQL = "select  VOYAGE_NO,BILL_NO,AWB,MX_TIME,DEC_TYPE,M_RESULT from {0} where send_flag = 0";
+        private string GetNoSendDataForScan_SQL = "select  * from SCAN where send_flag = 0";
         public DataAction()
         {
             TableName = MyConfig.TableName;
-            GetNoSendData_SQL = string.Format(GetNoSendData_SQL, TableName);
             UpdateSendFlag_SQL = string.Format(UpdateSendFlag_SQL, TableName);
         }
 
-        public DataTable GetNoSendData()
+        public DataTable GetNoSendDataForScan()
         {
-            return DbHelperSQL.Query(GetNoSendData_SQL).Tables[0];
+            return DbHelperSQL.Query(GetNoSendDataForScan_SQL).Tables[0];
         }
 
 

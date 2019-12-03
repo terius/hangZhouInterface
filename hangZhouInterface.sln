@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HangZhouService", "HangZhou
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HangZhouTran", "HZTran\HangZhouTran.csproj", "{DA07862A-497E-45F9-A3FC-D61B812912B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{39EAE9A2-07EB-4407-9A5C-4799FA093890}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,14 @@ Global
 		{DA07862A-497E-45F9-A3FC-D61B812912B9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DA07862A-497E-45F9-A3FC-D61B812912B9}.Release|x86.ActiveCfg = Release|Any CPU
 		{DA07862A-497E-45F9-A3FC-D61B812912B9}.Release|x86.Build.0 = Release|Any CPU
+		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Debug|x86.Build.0 = Debug|Any CPU
+		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Release|x86.ActiveCfg = Release|Any CPU
+		{39EAE9A2-07EB-4407-9A5C-4799FA093890}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

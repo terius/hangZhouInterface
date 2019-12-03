@@ -7,6 +7,7 @@ using System.Data;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Common
 {
@@ -134,11 +135,13 @@ namespace Common
             return str;
         }
 
+       
+
         public static void SerializerToFile<T>(T obj, string fileName)
         {
             var xmlString = Serializer<T>(obj);
 
-           var rs=  FileHelper.SaveToFile(xmlString, fileName);
+            var rs = FileHelper.SaveToFile(xmlString, fileName);
             if (rs)
             {
                 FileHelper.WriteLog($"{fileName}保存成功");
@@ -176,5 +179,13 @@ namespace Common
             result = result.Replace("'", "");
             return result;
         }
+
+
+        public static string XML2HtmlEnCode(string xmlString)
+        {
+            return HttpUtility.HtmlEncode(xmlString);
+        }
     }
+
+  
 }
