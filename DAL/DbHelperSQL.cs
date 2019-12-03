@@ -19,6 +19,7 @@ namespace DAL
         public static string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
         public DbHelperSQL()
         {
+            
         }
 
         #region 公用方法
