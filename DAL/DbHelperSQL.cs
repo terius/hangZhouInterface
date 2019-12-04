@@ -19,7 +19,7 @@ namespace DAL
         public static string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
         public DbHelperSQL()
         {
-            
+
         }
 
         #region 公用方法
@@ -643,6 +643,18 @@ namespace DAL
             }
         }
 
+
+        public static int GetIntValue(string SQLString, params SqlParameter[] cmdParms)
+        {
+            var single = GetSingle(SQLString, cmdParms);
+            int itemp = 0;
+            if (single != null && int.TryParse(single.ToString(), out itemp))
+            {
+                return itemp;
+            }
+            return 0;
+        }
+
         /// <summary>
         /// 执行查询语句，返回SqlDataReader ( 注意：调用该方法后，一定要对SqlDataReader进行Close )
         /// </summary>
@@ -660,7 +672,7 @@ namespace DAL
                 myReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
                 cmd.Parameters.Clear();
                 toInfo(myReader);
-             //   myReader.Close();
+                //   myReader.Close();
                 // return v;
             }
             catch (System.Data.SqlClient.SqlException e)

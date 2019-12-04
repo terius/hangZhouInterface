@@ -99,18 +99,20 @@ namespace HangZhouTran
                     string result = "";
                     string fileName = "";
                     string fileFullName = "";
+                    long id = 0;
                     foreach (DataRow row in ReadData.Rows)
                     {
 
                         try
                         {
+                            id = Convert.ToInt64(row["ID"]);
                             xml = CreateScanXML(row);
                             xmlStr = XmlHelper.Serializer(xml);
                            // xmlStr = XmlHelper.XML2HtmlEnCode(xmlStr);
                             var requestStr = string.Format("Request={0}&person_code={1}&login_pwd={2}&xmltype={3}", xmlStr, "fzj", "fzjAAA111aaa", "LOGISTICS_LIBRARY");
                             result = SendDataPost(requestStr);
                             resultXML = XmlHelper.Deserialize<ResultXML>(result);
-                            int saveResult = da.UpdateScanTable(resultXML);
+                            int saveResult = da.UpdateScanTable(resultXML, id);
 
                             fileName = xml.BILLNO + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml";
                             fileFullName = FileHelper.CreateFileNameWithDate(scanPath, fileName);
