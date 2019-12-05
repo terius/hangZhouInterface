@@ -7,9 +7,9 @@ namespace Model
     [XmlRoot("LOGISTICS_LIBRARY_RETURN")]
     public class ResultXML
     {
-        public string returnStatus { get; set; }
-        public string returnTime { get; set; }
-        public string returnInfo { get; set; }
+        public string RETURNSTATUS { get; set; }
+        public string RETURNTIME { get; set; }
+        public string RETURNINFO { get; set; }
 
     }
 }

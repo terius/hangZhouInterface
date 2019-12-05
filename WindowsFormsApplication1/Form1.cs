@@ -28,7 +28,11 @@ namespace WindowsFormsApplication1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-           
+            string file = "<LOGISTICS_LIBRARY_RETURN><RETURNSTATUS>1</RETURNSTATUS><RETURNTIME>20191205220502153</RETURNTIME><RETURNINFO>成功</RETURNINFO></LOGISTICS_LIBRARY_RETURN>";
+          //  var info = new ResultXML();
+          //  info.returnStatus
+           // var str = XmlHelper.Serializer(info);
+            var info2 = XmlHelper.Deserialize<ResultXML>(file);
         }
 
 

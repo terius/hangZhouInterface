@@ -109,18 +109,19 @@ namespace HangZhouTran
 
                         try
                         {
-                            voyageNo = row["BILLNO"].ToString();
-                            billNo = row["LOGISTICSNO"].ToString();
+                            voyageNo = row["BILLNO"].ToString().Trim();
+                            billNo = row["LOGISTICSNO"].ToString().Trim();
                             id = Convert.ToInt64(row["ID"]);
                             xml = CreateScanXML(row);
                             xmlStr = XmlHelper.Serializer(xml);
                             // xmlStr = XmlHelper.XML2HtmlEnCode(xmlStr);
                             var requestStr = string.Format("Request={0}&person_code={1}&login_pwd={2}&xmltype={3}", xmlStr, "fzj", "fzjAAA111aaa", "LOGISTICS_LIBRARY");
                             result = SendDataPost(requestStr);
+                            FileHelper.WriteLog($"service返回的信息{result}");
                             resultXML = XmlHelper.Deserialize<ResultXML>(result);
                             int saveResult = da.UpdateScanTable(resultXML, id);
 
-                            fileName = xml.BILLNO + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml";
+                            fileName = billNo + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml";
                             fileFullName = FileHelper.CreateFileNameWithDate(scanPath, fileName);
                             XmlHelper.SerializerStringToFile(xmlStr, fileFullName);
 

@@ -62,9 +62,10 @@ namespace DAL
             + " where ID=@ID";
         public int UpdateScanTable(ResultXML info, long id)
         {
-            DateTime returnTime = DateTime.Parse(info.returnTime);
+            DateTime returnTime = DateTime.ParseExact(info.RETURNTIME, "yyyyMMddHHmmssfff",
+                                     System.Globalization.CultureInfo.InvariantCulture);
             SqlParameter[] sqlparams = {
-                new SqlParameter("@RETURNINFO",info.returnInfo),
+                new SqlParameter("@RETURNINFO",info.RETURNINFO),
                 new SqlParameter("@RETURNTIME",returnTime),
                 new SqlParameter("@ID",id),
             };
