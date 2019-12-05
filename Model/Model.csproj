@@ -40,10 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="awb.cs" />
     <Compile Include="ResultXML.cs" />
     <Compile Include="ScanXML.cs" />
-    <Compile Include="SendXML.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

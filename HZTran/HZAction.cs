@@ -26,20 +26,22 @@ namespace HangZhouTran
             try
             {
                 FileHelper.WriteLog("服务已启动");
-                //  MyConfig.Load();
                 isRun = true;
                 CheckDirectory();
-                //扫描文件夹
+                //扫描Scan表
                 Thread MainThread = new Thread(RunTask);
                 MainThread.IsBackground = true;
-                MainThread.Name = "ScanFileToTableThread";
+                MainThread.Name = "ScanThread";
                 MainThread.Start();
 
-                //读取数据
-                //Thread MainThread2 = new Thread(RunTask2);
-                //MainThread2.IsBackground = true;
-                //MainThread2.Name = "SendDataToFileThread";
-                //MainThread2.Start();
+                if (MyConfig.OpenTMPThread == 1)
+                {
+                    //扫描TMP表
+                    Thread MainThread2 = new Thread(RunTask2);
+                    MainThread2.IsBackground = true;
+                    MainThread2.Name = "TMPThread";
+                    MainThread2.Start();
+                }
 
 
 
@@ -99,16 +101,20 @@ namespace HangZhouTran
                     string result = "";
                     string fileName = "";
                     string fileFullName = "";
+                    string billNo = "";
+                    string voyageNo = "";
                     long id = 0;
                     foreach (DataRow row in ReadData.Rows)
                     {
 
                         try
                         {
+                            voyageNo = row["BILLNO"].ToString();
+                            billNo = row["LOGISTICSNO"].ToString();
                             id = Convert.ToInt64(row["ID"]);
                             xml = CreateScanXML(row);
                             xmlStr = XmlHelper.Serializer(xml);
-                           // xmlStr = XmlHelper.XML2HtmlEnCode(xmlStr);
+                            // xmlStr = XmlHelper.XML2HtmlEnCode(xmlStr);
                             var requestStr = string.Format("Request={0}&person_code={1}&login_pwd={2}&xmltype={3}", xmlStr, "fzj", "fzjAAA111aaa", "LOGISTICS_LIBRARY");
                             result = SendDataPost(requestStr);
                             resultXML = XmlHelper.Deserialize<ResultXML>(result);
@@ -122,9 +128,9 @@ namespace HangZhouTran
                             XmlHelper.SerializerToFile(resultXML, fileFullName);
 
                             Thread.Sleep(loopTimeForOracle);
-                            FileHelper.WriteLog(result);
-                            //<?xml version="1.0" encoding="utf-8"?><LOGISTICS_LIBRARY><BILLNO>aaaaa</BILLNO><LOGISTICSNO>bbbbb</LOGISTICSNO><JQBH>CT31</JQBH><V_TYPE>50</V_TYPE><I_E_FLAG>I</I_E_FLAG><V_SOURCE>0</V_SOURCE><LOGISTICSCODE>410198Z062</LOGISTICSCODE><CUSTOMSCODE>4605</CUSTOMSCODE></LOGISTICS_LIBRARY>
-                       
+
+                            da.TranOracleToTMP(voyageNo, billNo);
+
                         }
                         catch (Exception ex)
                         {
@@ -195,7 +201,7 @@ namespace HangZhouTran
                 while (isRun)
                 {
                     ReadTableTMP();
-                    Thread.Sleep(MyConfig.LoopTimeForRead);
+                    Thread.Sleep(MyConfig.LoopTimeForTMP);
                 }
             }
         }
@@ -204,36 +210,19 @@ namespace HangZhouTran
         {
             try
             {
-                var ReadData = da.GetNoSendDataForScan();
-                SendXML xml = null;
+                var ReadData = da.GetNoSendDataForTMP();
+
                 if (ReadData != null && ReadData.Rows.Count > 0)
                 {
-                    string AWB = "";
-                    string fileName = "";
-                    string fileFullName = "";
                     foreach (DataRow row in ReadData.Rows)
                     {
-
                         try
                         {
-                            AWB = row["AWB"].ToString();
-                            FileHelper.WriteLog($"开始处理{AWB}的数据");
-                            xml = CreateSendXML(row);
-                            fileName = AWB + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml";
-                            fileFullName = Path.Combine(basePath, MyConfig.SendPath, fileName);
-                            XmlHelper.SerializerToFile(xml, fileFullName);
-                            if (!string.IsNullOrWhiteSpace(MyConfig.SendPathBak))
-                            {
-                                fileFullName = Path.Combine(FileHelper.CreatePathWithDate(MyConfig.SendPathBak), fileName);
-                                XmlHelper.SerializerToFile(xml, fileFullName);
-                            }
-                            da.UpdateSendFlag(AWB, "1");
-                            Thread.Sleep(10);
+                            da.TranTMPToOracle(row);
                         }
                         catch (Exception ex)
                         {
-                            da.UpdateSendFlag(AWB, "2");
-                            Loger.LogMessage(ex);
+                            Loger.LogMessage(ex.ToString());
                         }
 
                     }
@@ -247,24 +236,13 @@ namespace HangZhouTran
             }
         }
 
-        private SendXML CreateSendXML(DataRow row)
-        {
-            var info = new SendXML();
-            info.Body.AWB_INFO.AWB = row["AWB"].ToString();
-            info.Body.AWB_INFO.DEC_TYPE = row["DEC_TYPE"].ToString();
-            info.Body.AWB_INFO.MainAWB = row["BILL_NO"].ToString();
-            info.Body.AWB_INFO.MX_TIME = ConvertHelper.ToDateTimeStr(row["MX_TIME"], "yyyyMMddHHmmss");
-            info.Body.AWB_INFO.M_RESULT = row["M_RESULT"].ToString();
-            info.Body.AWB_INFO.VOYAGE_NO = row["VOYAGE_NO"].ToString();
 
-            return info;
-        }
 
         #endregion
 
 
 
-     
+
 
         public void EndRun()
         {

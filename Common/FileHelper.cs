@@ -35,9 +35,10 @@ namespace Common
                     Thread.Sleep(10);
                 }
 
+                var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 using (StreamWriter sw = new StreamWriter(path, true, Encoding.Default))
                 {
-                    sw.WriteLine(msg);
+                    sw.WriteLine(now +"---------" + msg);
                     sw.Flush();
                     sw.Close();
                 }
