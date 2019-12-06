@@ -296,7 +296,7 @@ namespace DAL
                     + "'CT31',"
                     + "'FZJ',"
                     + "'0',"
-                    + "'0');";
+                    + "'0')";
 
         readonly string insertPICSql = "insert into x.tb_pic(ID,BILL_NO,V_PATH,D_PASS_DATETIME,V_NOTE,N_SEQ,JQBH) values("
             +"x.seq_PIC.Nextval,"
@@ -305,7 +305,7 @@ namespace DAL
             + "sysdate,"
             + "'峰之杰',"
             + "1,"
-            + "'CT31');";
+            + "'CT31')";
         public void TranTMPToOracle(DataRow row)
         {
        
@@ -321,12 +321,15 @@ namespace DAL
                  new OracleParameter(":FWEIGHT",F_Weight),
             };
             int rs = DbHelperOra.ExecuteSql(insertWeightSql, sqlparams);
+           // FileHelper.WriteLog($"insertWeightSql更新记录数：{rs}");
 
             OracleParameter[] sqlparams2 = {
                 new OracleParameter(":BILLNO",bill_no),
                  new OracleParameter(":MRESULT",M_Result),
             };
-             rs += DbHelperOra.ExecuteSql(insertHgorgjSqL, sqlparams2);
+           // FileHelper.WriteLog($"开始插入insertHgorgjSqL{insertHgorgjSqL}");
+            rs += DbHelperOra.ExecuteSql(insertHgorgjSqL, sqlparams2);
+         //   FileHelper.WriteLog($"insertHgorgjSqL更新记录数：{rs}");
 
             OracleParameter[] sqlparams3 = {
                 new OracleParameter(":BILLNO",bill_no),
@@ -334,6 +337,7 @@ namespace DAL
             };
             rs += DbHelperOra.ExecuteSql(insertPICSql, sqlparams3);
             FileHelper.WriteLog($"存储Oracle记录条数：{rs}");
+        //    FileHelper.WriteLog($"insertPICSql更新记录数：{rs}");
 
             SqlParameter[] sqlparams4 = {
                 new SqlParameter("@BILL_NO",bill_no)

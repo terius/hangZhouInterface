@@ -217,14 +217,14 @@ namespace HangZhouTran
                 {
                     foreach (DataRow row in ReadData.Rows)
                     {
-                        try
-                        {
+                        //try
+                        //{
                             da.TranTMPToOracle(row);
-                        }
-                        catch (Exception ex)
-                        {
-                            Loger.LogMessage(ex.ToString());
-                        }
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    Loger.LogMessage(ex.ToString());
+                        //}
 
                     }
 
