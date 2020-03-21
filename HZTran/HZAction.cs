@@ -2,6 +2,7 @@
 using DAL;
 using Model;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -67,11 +68,12 @@ namespace HangZhouTran
         private void ScanFiles()
         {
             DirectoryInfo di = new DirectoryInfo(Path.Combine(basePath, MyConfig.ScanPath));
-
-            if (MyConfig.ReadType == 1)//扫描.xlsm文件
+            var fileExt = "";
+            TxtFile txtFile = null;
+            foreach (var file in di.GetFiles())
             {
-
-                foreach (var file in di.EnumerateFiles("*.xlsm"))
+                fileExt = file.Extension.ToLower();
+                if (fileExt == ".xlsm")
                 {
                     try
                     {
@@ -84,18 +86,20 @@ namespace HangZhouTran
                         file.MoveTo(Path.Combine(basePath, badScanFilePath, file.Name));
                         Loger.LogMessage(ex);
                     }
-
                 }
-            }
-            else //扫描xml文件
-            {
-                foreach (var file in di.EnumerateFiles("*.xml"))
+                else if (fileExt == ".txt")
                 {
+                 
                     try
                     {
-                        var xmlData = XmlHelper.DeserializeFromFile<awblist>(file.FullName);
-                        da.SaveScanDataForXML(xmlData);
-                        file.MoveTo(Path.Combine(basePath, saveScanFilePath, file.Name));
+                        var jsonStr = File.ReadAllText(file.FullName);
+                        if (!string.IsNullOrWhiteSpace(jsonStr))
+                        {
+                            txtFile = JsonHelper.DeserializeObj<TxtFile>(jsonStr);
+                            da.SaveScanDataForTxt(txtFile);
+                            file.MoveTo(Path.Combine(basePath, saveScanFilePath, file.Name));
+                        }
+
                     }
                     catch (Exception ex)
                     {
@@ -104,7 +108,7 @@ namespace HangZhouTran
                     }
                 }
             }
-
+          
         }
 
         #endregion
@@ -141,7 +145,7 @@ namespace HangZhouTran
                         {
                             AWB = row["AWB"].ToString();
                             FileHelper.WriteLog($"开始处理{AWB}的数据");
-                            xml =  CreateSendXML(row);
+                            xml = CreateSendXML(row);
                             fileName = AWB + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".xml";
                             fileFullName = Path.Combine(basePath, MyConfig.SendPath, fileName);
                             XmlHelper.SerializerToFile(xml, fileFullName);
@@ -221,4 +225,7 @@ namespace HangZhouTran
             isRun = false;
         }
     }
+
+
+    
 }

@@ -44,11 +44,18 @@ namespace WindowsFormsApplication1
         {
 
 
-            var file = @"‪D:\work\MPS_IB_20190903160000.xml";
-            file = @"d:\2.xml";
+            var file = @"D:\work\Xray\20200321\101.txt";
+
+            DirectoryInfo di = new DirectoryInfo(@"D:\work\Xray\20200321");
+            foreach (var file11 in di.GetFiles())
+            {
+                var aaa = file11.Extension;
+            }
+            var jsonStr = File.ReadAllText(file);
+            var info = JsonHelper.DeserializeObj<TxtFile>(jsonStr);
             //XmlDocument xDoc = new XmlDocument();
             //xDoc.Load(file);
-            //XmlNodeList nodelist = xDoc.SelectNodes("awblist/awb");
+            //XmlNodeList nodelist = xDoc.SelectNodes("awblist /awb");
             //foreach (XmlNode node in nodelist)
             //{
             //   var aaa=node.SelectSingleNode("awbnbr").InnerText;

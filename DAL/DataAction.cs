@@ -127,5 +127,23 @@ namespace DAL
             }
             return rs;
         }
+
+        public int SaveScanDataForTxt(TxtFile data)
+        {
+            int rs = 0;
+            string bill_no;
+            foreach (var item in data.shipments)
+            {
+                bill_no = item.hawb;
+
+                rs += InsertOrUpdateAWB(bill_no, bill_no);
+                foreach (var awbItem in item.mps)
+                {
+                    rs += InsertOrUpdateAWB(bill_no, awbItem);
+                }
+
+            }
+            return rs;
+        }
     }
 }
