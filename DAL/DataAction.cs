@@ -46,7 +46,7 @@ namespace DAL
             return DbHelperSQL.ExecuteSql(UpdateSendFlag_SQL, sqlparams);
         }
 
-        string InsertAWB_SQL = "insert into AWB(BILL_NO,AWB) values (@BILL_NO,@AWB)";
+        string InsertAWB_SQL = "insert into AWB(BILL_NO,AWB,ADDTIME) values (@BILL_NO,@AWB,getdate())";
         public int SaveScanDataForXLSM(DataTable data)
         {
 
@@ -94,7 +94,7 @@ namespace DAL
                 };
             if (CheckAWBIsDup(awb))
             {
-                return DbHelperSQL.ExecuteSql("update AWB set BILL_NO=@BILL_NO where AWB = @AWB", sqlparams);
+                return DbHelperSQL.ExecuteSql("update AWB set BILL_NO=@BILL_NO,ADDTIME=getdate() where AWB = @AWB", sqlparams);
             }
             else
             {
